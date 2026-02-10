@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: docs
+  preview:
+    browser: false
 
 book:
   title: "But what does it mean?"
@@ -16,3 +18,4 @@ format:
   html:
     toc: true
     number-sections: true
+    html-math-method: mathjax
