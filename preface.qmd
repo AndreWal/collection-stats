@@ -1,0 +1,13 @@
+---
+title: "Preface"
+---
+
+This preface explains why the book exists and how it is organized.
+
+## Who this is for
+
+Describe the intended audience and what they should expect.
+
+## How to use this book
+
+Explain how readers can navigate the material and any prerequisites.

@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "But what does it mean?",
+    "section": "",
+    "text": "0.1 How to read\nWelcome to the book. This is the landing page for the HTML version.\nUse the navigation sidebar to move between chapters.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>But what does it mean?</span>"
+    ]
+  },
+  {
+    "objectID": "preface.html",
+    "href": "preface.html",
+    "title": "2  Preface",
+    "section": "",
+    "text": "2.1 Who this is for\nThis preface explains why the book exists and how it is organized.\nDescribe the intended audience and what they should expect.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Preface</span>"
+    ]
+  },
+  {
+    "objectID": "preface.html#how-to-use-this-book",
+    "href": "preface.html#how-to-use-this-book",
+    "title": "2  Preface",
+    "section": "2.2 How to use this book",
+    "text": "2.2 How to use this book\nExplain how readers can navigate the material and any prerequisites.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Preface</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html",
+    "href": "chapters/01-introduction.html",
+    "title": "3  Introduction",
+    "section": "",
+    "text": "3.1 Why this book\nAdd a short overview of your goals and intended audience.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-introduction.html#roadmap",
+    "href": "chapters/01-introduction.html#roadmap",
+    "title": "3  Introduction",
+    "section": "3.2 Roadmap",
+    "text": "3.2 Roadmap\nOutline the main themes and how the chapters connect.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-chapter-one.html",
+    "href": "chapters/02-chapter-one.html",
+    "title": "4  Chapter One",
+    "section": "",
+    "text": "4.1 Opening idea\nIntroduce the first key concept here.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Chapter One</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-chapter-two.html",
+    "href": "chapters/03-chapter-two.html",
+    "title": "5  Chapter Two",
+    "section": "",
+    "text": "5.1 Opening idea\nContinue with the next concept or case study.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Chapter Two</span>"
+    ]
+  }
+]

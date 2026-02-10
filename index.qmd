@@ -1,0 +1,9 @@
+---
+title: "But what does it mean?"
+---
+
+Welcome to the book. This is the landing page for the HTML version.
+
+## How to read
+
+Use the navigation sidebar to move between chapters.
