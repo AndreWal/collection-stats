@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Reference Categories and Baseline Groups – But what does it mean?</title>
+<title>4&nbsp; Categorical and Compositional Predictors: A Guide – But what does it mean?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -103,7 +103,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-sidebar floating">
@@ -115,7 +145,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/02-chapter-one.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reference Categories and Baseline Groups</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/02-chapter-one.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -161,7 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/02-chapter-one.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reference Categories and Baseline Groups</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -180,8 +210,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#categorical-predictor-variables" id="toc-categorical-predictor-variables" class="nav-link active" data-scroll-target="#categorical-predictor-variables"><span class="header-section-number">4.1</span> Categorical Predictor Variables</a></li>
-  <li><a href="#shares" id="toc-shares" class="nav-link" data-scroll-target="#shares"><span class="header-section-number">4.2</span> Shares</a></li>
+  <li><a href="#binary-predictor-variables" id="toc-binary-predictor-variables" class="nav-link active" data-scroll-target="#binary-predictor-variables"><span class="header-section-number">4.1</span> Binary Predictor Variables</a></li>
+  <li><a href="#predictor-variables-with-more-than-two-categories" id="toc-predictor-variables-with-more-than-two-categories" class="nav-link" data-scroll-target="#predictor-variables-with-more-than-two-categories"><span class="header-section-number">4.2</span> Predictor Variables with More than Two Categories</a></li>
+  <li><a href="#shares" id="toc-shares" class="nav-link" data-scroll-target="#shares"><span class="header-section-number">4.3</span> Shares</a></li>
   </ul>
 </nav>
     </div>
@@ -190,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reference Categories and Baseline Groups</span></h1>
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></h1>
 </div>
 
 
@@ -207,76 +238,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="categorical-predictor-variables" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="categorical-predictor-variables"><span class="header-section-number">4.1</span> Categorical Predictor Variables</h2>
-<p>We already talked about how to interpret coefficients in a regression model. What we have not discussed is that the interpretation that a coefficient as the expected change in the response variable for a one-unit increase in the predictor variable, holding all other predictors constant, only applies to continuous predictor variables. For categorical predictors and other kind of bounded variables, the interpretation is different.</p>
-<p>Let’s imagine we investigate the relationship between gender and political donations. We have a binary variable <code>gender</code> that takes the value of 0 for men and 1 for women. We run a regression model with <code>gender</code> as the predictor variable and <code>donationAmount</code> as the response variable:</p>
+<section id="binary-predictor-variables" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="binary-predictor-variables"><span class="header-section-number">4.1</span> Binary Predictor Variables</h2>
+<p>I already discussed how to interpret coefficients in a regression model. What I have not discussed is that the interpretation of a coefficient as the expected change in the response variable for a one-unit increase in the predictor variable (holding all other predictors constant) is most direct when a one-unit change is substantively meaningful. For binary and categorical predictors, coefficients are instead interpreted as differences between categories defined by the coding scheme. This has consequences for how we specify models and interpret results as I will show in the following.</p>
+<p>Suppose I study the relationship between gender and political donations. I have a binary variable <code>gender</code> coded 0 for men and 1 for women and <code>donationAmount</code> in US dollars. To understand how categorical variables work in regression analysis, I start by computing the average donation amount for men and women:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(donationAmount <span class="sc">~</span> <span class="fu">factor</span>(gender), <span class="at">data =</span> data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mean_donation <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(donationAmount <span class="sc">~</span> gender, <span class="at">data =</span> data, <span class="at">FUN =</span> mean)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mean_donation<span class="sc">$</span>gender <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Men"</span>, <span class="st">"Women"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(mean_donation) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Gender"</span>, <span class="st">"Mean Donation Amount"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mean_donation, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Gender</th>
+<th style="text-align: right;">Mean Donation Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Men</td>
+<td style="text-align: right;">98.75</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Women</td>
+<td style="text-align: right;">148.22</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>As the table shows, men donate on average 98.75 dollars, while women donate on average 148.22 dollars. With that in mind, I estimate a regression model with <code>donationAmount</code> as the response variable and <code>gender</code> as the predictor variable. Mathematically, the model can be written as follows:</p>
+<p><span class="math display">\[donationAmount_i = \alpha_0 + \beta_1 gender_i + \epsilon_i\]</span></p>
+<p>In R, I estimate the model using the <code>lm()</code> function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(donationAmount <span class="sc">~</span> <span class="fu">factor</span>(gender), <span class="at">data =</span> data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
 lm(formula = donationAmount ~ factor(gender), data = data)
 
-Residuals:
-    Min      1Q  Median      3Q     Max 
--88.756 -18.980   0.416  20.797  98.654 
+Coefficients:
+    (Intercept)  factor(gender)1  
+          98.75            49.46  </code></pre>
+</div>
+</div>
+<p>I start with the interpretation of the results before digging deeper. The coefficient for <code>gender</code> is about 50. In the case of a binary variable, the interpretation is straightforward: The coefficient compares the coded group (1) to the reference group (0). More precisely, the coefficient of about 50 for <code>gender</code> means that women donate on average 50 dollars more than men.</p>
+<p>Comparing the regression output to the means table, I can highlight two points. First, the coefficient of the <code>intercept</code> is about 98.75, which is the average donation amount for men. Put differently, the <code>intercept</code> equals the mean of the reference category of men in this specification because, more generally, the intercept is the expected outcome when all predictors are zero and factors are at their baseline levels. This can be expressed mathematically:</p>
+<p><span class="math display">\[E(donationAmount \mid \text{men}) = \alpha_0\]</span></p>
+<p>This is why, when the model includes an intercept, one category must be omitted; otherwise the full set of dummies is perfectly collinear with the intercept (the dummy-variable trap). That means that if I included binary variables for both men and women in the model, the dummy variables would be perfectly collinear with the <code>intercept</code> and the model would not be estimable.</p>
+<p>Second, the coefficient for <code>gender</code> is about 50, which is the difference in mean donation amounts between men and women. Thus, the coefficient for <code>gender</code> does not give us the average donation amount for women, but rather the difference in average donation amounts between women and men. In turn, this means that the mean donation amount of women is the sum of the coefficient of the <code>intercept</code> and the coefficient for <code>gender</code>:<br>
+<span class="math display">\[E(donationAmount \mid \text{women}) = \alpha_0 + \beta_1\]</span></p>
+<p>Lastly, the substantive interpretation of the results does not change if I alter the reference category. With pure releveling (changing only which category is omitted), fitted values and model fit stay the same, but coefficient labels and interpretations change. To illustrate this, I can relevel the <code>gender</code> variable so that women are the reference category and are omitted from the model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(donationAmount <span class="sc">~</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(gender), <span class="at">ref =</span> <span class="st">"1"</span>), <span class="at">data =</span> data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = donationAmount ~ relevel(factor(gender), ref = "1"), 
+    data = data)
 
 Coefficients:
-                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)       98.754      1.807   54.65   &lt;2e-16 ***
-factor(gender)1   49.464      2.636   18.77   &lt;2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 29.42 on 498 degrees of freedom
-Multiple R-squared:  0.4142,    Adjusted R-squared:  0.413 
-F-statistic: 352.1 on 1 and 498 DF,  p-value: &lt; 2.2e-16</code></pre>
+                        (Intercept)  relevel(factor(gender), ref = "1")0  
+                             148.22                               -49.46  </code></pre>
 </div>
 </div>
-<p>The result shows that the coefficient for <code>gender</code> with the value 1 is 50. However, what does that mean? Since no one can become one unit more woman, another interpretation is needed. In case of a binary variable, the interpretation is straightforward: The coefficient of the group that is in the model specification is compared to the group that is not in the model specification. In this case, the coefficient of 50 for <code>gender1</code> means that women donate on average 50 dollars more than men. The group that is not in the model specification, in this case men, is called the reference category or baseline group. The choice of the reference category is arbitrary and does not affect the overall fit of the model, but it does affect the interpretation of the coefficients.</p>
-<p>The logic becomes a bit more complex when we have more than two categories. For instance, let’s assume we have another categorical variable called <code>party identification</code> with four possible values: <code>Left</code>, <code>Center</code>, <code>Right</code>, and <code>Other</code>. To estimate the effect of a respondent’s <code>party identification</code> on <code>donationAmount</code>, we need to choose at least one of the categories as the reference category. To illustrate the problem, we specify one regression model with <code>Other</code> as the reference category and another regression model with both <code>Right</code> and <code>Other</code> as the reference categories:</p>
+<p>As shown, the coefficient for <code>intercept</code> is now about 148, which is equal to the average donation amount for women according to the means table. The coefficient for <code>gender</code> (level 0) now displays the difference in donation amount of men compared to women. More precisely, it is now about -50, meaning that men donate on average 50 dollars less than women. Again, summing the coefficient of the <code>intercept</code> and the coefficient for <code>gender</code> gives the average donation amount for men. Thus, while the coefficients of <code>intercept</code> and <code>gender</code> have changed, the substantive interpretation of the results has not. The choice of reference category does not affect the substantive interpretation of the results, but it does affect how the coefficients are read.</p>
+</section>
+<section id="predictor-variables-with-more-than-two-categories" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="predictor-variables-with-more-than-two-categories"><span class="header-section-number">4.2</span> Predictor Variables with More than Two Categories</h2>
+<p>The logic becomes a bit more complex when I have more than two categories. For instance, suppose I have another categorical variable called <code>party identification</code> with four possible groups: <code>Left</code>, <code>Center</code>, <code>Right</code>, and <code>Other</code>. To illustrate the link between reference categories and group means, I display the average donation amount for each <code>party identification</code> group in the table below. In addition, I add a row for the average donation amount for the combined <code>Right</code> and <code>Other</code> group, which will help me to illustrate what changes when I omit multiple categories (instead of one category) in the regression model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Leave out "Other" as the reference category</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>model_other_ref <span class="ot">&lt;-</span> <span class="fu">lm</span>(donationAmount <span class="sc">~</span> left <span class="sc">+</span> center <span class="sc">+</span> right, <span class="at">data =</span> data_party)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Leave out "Right" and "Other" as reference categories</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>model_ro_ref <span class="ot">&lt;-</span> <span class="fu">lm</span>(donationAmount <span class="sc">~</span> left <span class="sc">+</span> center, <span class="at">data =</span> data_party)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fmt_coef <span class="ot">&lt;-</span> <span class="cf">function</span>(cs, term) {</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>term <span class="sc">%in%</span> <span class="fu">rownames</span>(cs)) {</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="st">"—"</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"%.2f (%.2f)"</span>, cs[term, <span class="dv">1</span>], cs[term, <span class="dv">2</span>])</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>cs_other <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_other_ref))</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>cs_ro_ref <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_ro_ref))</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>terms <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Left"</span>, <span class="st">"Center"</span>, <span class="st">"Right"</span>, <span class="st">"Other"</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>table_out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Term =</span> terms,</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Ref:Other</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"left"</span>),</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"center"</span>),</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"right"</span>),</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Ref:Right_Other</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_ro_ref, <span class="st">"left"</span>),</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_ro_ref, <span class="st">"center"</span>),</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span>,</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  table_out,</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"lcc"</span>,</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Party effects with different reference categories"</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mean_party <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(donationAmount <span class="sc">~</span> party, <span class="at">data =</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">party =</span> party,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">donationAmount =</span> donationAmount</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>), <span class="at">FUN =</span> mean)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>mean_ro <span class="ot">&lt;-</span> <span class="fu">mean</span>(donationAmount[party <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Right"</span>, <span class="st">"Other"</span>)])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>mean_party <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  mean_party,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">party =</span> <span class="st">"Right + Other"</span>, <span class="at">donationAmount =</span> mean_ro)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(mean_party) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Party"</span>, <span class="st">"Mean Donation Amount"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(mean_party, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Party</th>
+<th style="text-align: right;">Mean Donation Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Center</td>
+<td style="text-align: right;">115.45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Left</td>
+<td style="text-align: right;">140.90</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">101.14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Right</td>
+<td style="text-align: right;">124.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Right + Other</td>
+<td style="text-align: right;">117.80</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>To estimate the relationship of a respondent’s <code>party identification</code> and <code>donationAmount</code> in a linear regression model, I need to choose one of the categories as the reference category. To illustrate what happens when I omit more than one category, I specify one regression model with <code>Other</code> as the reference category and another regression model with <code>Right</code> and <code>Other</code> jointly omitted (a pooled reference category). Mathematically, the first model can be written as follows:</p>
+<p><span class="math display">\[
+donationAmount_i  = \alpha_0 + \beta_1 left_i + \beta_2 center_i + \beta_3 right_i + \epsilon_i
+\]</span></p>
+<p>With <code>Right</code> and <code>Other</code> pooled into a single reference category, the second model becomes:</p>
+<p><span class="math display">\[
+donationAmount_i = \alpha_0 + \beta_1 left_i + \beta_2 center_i + \epsilon_i
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Leave out "Other" as the reference category</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>model_other_ref <span class="ot">&lt;-</span> <span class="fu">lm</span>(donationAmount <span class="sc">~</span> left <span class="sc">+</span> center <span class="sc">+</span> right, <span class="at">data =</span> data_party)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Leave out "Right" and "Other" as reference categories</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>model_ro_ref <span class="ot">&lt;-</span> <span class="fu">lm</span>(donationAmount <span class="sc">~</span> left <span class="sc">+</span> center, <span class="at">data =</span> data_party)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>fmt_coef <span class="ot">&lt;-</span> <span class="cf">function</span>(cs, term) {</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>term <span class="sc">%in%</span> <span class="fu">rownames</span>(cs)) {</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="st">"—"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"%.2f (%.2f)"</span>, cs[term, <span class="dv">1</span>], cs[term, <span class="dv">2</span>])</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>cs_other <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_other_ref))</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>cs_ro_ref <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_ro_ref))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>terms <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"Left"</span>, <span class="st">"Center"</span>, <span class="st">"Right"</span>, <span class="st">"Other"</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>table_out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Term =</span> terms,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Ref:Other</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"(Intercept)"</span>),</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"left"</span>),</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"center"</span>),</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_other, <span class="st">"right"</span>),</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Ref:Right_Other</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_ro_ref, <span class="st">"(Intercept)"</span>),</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_ro_ref, <span class="st">"left"</span>),</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_ro_ref, <span class="st">"center"</span>),</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>  table_out,</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"lcc"</span>,</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Party effects with different reference categories"</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Party effects with different reference categories</caption>
@@ -289,21 +416,26 @@ F-statistic: 352.1 on 1 and 498 DF,  p-value: &lt; 2.2e-16</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">101.14 (3.32)</td>
+<td style="text-align: center;">117.80 (1.80)</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Left</td>
 <td style="text-align: center;">39.77 (3.83)</td>
 <td style="text-align: center;">23.11 (2.65)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Center</td>
 <td style="text-align: center;">14.31 (3.75)</td>
 <td style="text-align: center;">-2.35 (2.54)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Right</td>
 <td style="text-align: center;">23.02 (3.91)</td>
 <td style="text-align: center;">ref</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Other</td>
 <td style="text-align: center;">ref</td>
 <td style="text-align: center;">ref</td>
@@ -312,12 +444,99 @@ F-statistic: 352.1 on 1 and 498 DF,  p-value: &lt; 2.2e-16</code></pre>
 </table>
 </div>
 </div>
-<p>The first column of the tables shows the results when <code>Other</code> is the reference category. This means the coefficients for <code>Left</code>, <code>Center</code>, and <code>Right</code> are interpreted relative to <code>Other</code> category. For instance, the coefficient for <code>Left</code> with a value of 40 means that voters who identify as <code>Left</code> donate on average 40 dollars more than voters who identify as <code>Other</code>. However, the coefficient for <code>Left</code> changes considerably when we leave out the <code>Right</code> category as well. The reason is that the coefficient for <code>Left</code> in the second column has to be interpreted relative to the <code>Other</code> and <code>Right</code> category. Voters who identify as <code>Right</code> donate on average 23 dollars more than voters who identify as <code>Other</code> (see first column) and thus have the second largest coefficient in the first column. Consequently, leaving the <code>Right</code> category out, the coefficient for <code>Left</code> in the second column has now to be compared against <code>Other</code> and the - generously donating - <code>Right</code> category. As a result, the coefficient for <code>Left</code> becomes much smaller in the second column.</p>
+<p>The first column of the table reports estimates with <code>Other</code> as the reference category, so the coefficients for <code>Left</code>, <code>Center</code>, and <code>Right</code> are each interpreted relative to <code>Other</code>. This means that the coefficient of the <code>intercept</code> is the average donation amount for respondents identifying as <code>Other</code>, and the coefficients for <code>Left</code>, <code>Center</code>, and <code>Right</code> show how much more (or less) respondents in these groups donate on average compared to respondents in <code>Other</code>. As shown before, the results can be easily cross-checked with the means table. While the coefficient for the <code>intercept</code> in the regression is equal to the mean donation amount for <code>Other</code> respondents in the means table, the coefficients for <code>Left</code>, <code>Center</code>, and <code>Right</code> have to be added to the <code>intercept</code> to get the mean donation amount for these groups, which matches the values in the means table as well. For example, the average donation amount for <code>Left</code> respondents in the first column can be deduced as follows: <span class="math display">\[E(donationAmount \mid \text{Left}) = \alpha_0 + \beta_1 \]</span></p>
+<p>which is about 101.14 + 39.77 = 140.91 dollars, which matches roughly the average donation amount for <code>Left</code> respondents in the means table (aside from differences in rounding). The same logic can be applied to the coefficients for <code>Center</code> and <code>Right</code>.</p>
+<p>In the second column, however, I change the specification by omitting <code>Right</code> as well, which means <code>Right</code> and <code>Other</code> are pooled into a single reference category. Thus, this is not merely releveling; it is a different model specification because it compares <code>Left</code> and <code>Center</code> to <code>Right</code> and <code>Other</code>. Coefficients therefore change meaning. While the interpretation is still straightforward as before, the estimand is different from the first model.</p>
+<p>More precisely, the coefficient for the <code>intercept</code> in the second column is now the average donation amount for respondents identifying as <code>Right</code> or <code>Other</code>. This can be confirmed by comparing the coefficient of the <code>intercept</code> with the row for <code>Right</code> or <code>Other</code> in the means table. This also means that the coefficients for <code>Left</code> and <code>Center</code> are now interpreted as the difference in average donation amounts between respondents identifying as either <code>Left</code> or <code>Center</code> on one hand and respondents identifying as <code>Right</code> or <code>Other</code> on the other hand. And since the coefficient of the <code>intercept</code> increased by almost 17 dollars compared to the first column, the coefficients for <code>Left</code> and <code>Center</code> decreased accordingly. For instance, the coefficient for <code>Center</code> is now negative, which reflects the fact that the average donation amount for respondents identifying as <code>Center</code> is 2.35 dollars less than the average donation amount for respondents identifying as <code>Right</code> or <code>Other</code> as the means table shows.</p>
+<p>The main takeaway is that with pure releveling, fitted values and model fit do not change; only coefficient labels and comparisons do. With pooling reference categories, you change the comparison group and therefore the estimand and the substantive conclusions that you can draw.</p>
 </section>
-<section id="shares" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="shares"><span class="header-section-number">4.2</span> Shares</h2>
-<p>One common case that is subject to the same problem of reference categories but is rarely discussed in the literature is the case of shares. For instance, researchers are often interested in the effect of the share of the population living in urban areas, the share of the agricultural or industrial work force, the share of ethnic or religious groups, or the share of the population with a certain level of education on some outcome (to name but a few examples). In all these cases, the share variable is bounded between 0 and 1 and thus has a reference category at both ends of the spectrum. For instance, if we have a variable that measures the share of the population living in urban areas, then the reference category for a value of 0 is that no one lives in urban areas (and everybody lives in rural areas), while the reference category for a value of 1 is that everyone lives in urban areas (and no one lives in rural areas). This means that the interpretation of the coefficients for share variables can be quite complex and depends on the number of categories.</p>
-<p>A quite prominent example is the literature on the relationship between the ideological composition of government and spending patterns. A typical setup is to use total government spending or social security spending as the response variable and the share of specific parties in government as the predictor variable. Here again, the interpretation of the coefficient for the share of specific parties in government depends on the reference category. In some specifications, only the share of left-wing parties is included as a predictor variable, while in other specifications, the share of left-wing and center or Christian parties is included. The interpretation of the coefficient for the share of left-wing parties in government changes considerably depending on whether the share of other types of parties is included in the model specification or left out as reference category. Thus, the interpretation of the coefficients for share variables is the same as for categorical variables with the difference that share variables can take on a continuous range of values between 0 and 1, while categorical variables take on discrete values.</p>
+<section id="shares" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="shares"><span class="header-section-number">4.3</span> Shares</h2>
+<p>Another case that is subject to the same problem of reference categories but is often underemphasized in the literature is the case of shares. For instance, researchers are often interested in the effect of the share of the population living in urban areas, the share of the agricultural or industrial workforce, the share of ethnic or religious groups, or the share of the population with a certain level of education on some outcome (to name but a few examples). In all these cases, the share variable is bounded between 0 and 1 and thus has an implicit complement (e.g., rural share = 1 − urban share). For instance, if I have a variable that measures the share of the population living in urban areas, then a value of 0 means everyone is in the complement category, and a value of 1 means no one is in the complement category. This means that the interpretation of the coefficients for share variables is subject to the same problems as before and depends on the number of categories and on which share(s) are omitted from the model.</p>
+<p>To illustrate the problem, consider party shares in government. Suppose I observe the share of cabinet seats held by left, center, and right parties. Each share is between 0 and 1 and the three shares sum to 1. Because the shares sum to 1, these relationships are always interpreted as shifts in composition (increasing one share necessarily decreases at least one other share). I also observe social spending per capita which serves as the response variable.</p>
+<p>Because the shares sum to 1, one share must be omitted when I include an intercept. If I omit the right share, the model can be written as:</p>
+<p><span class="math display">\[
+SocialSpendingpc_i = \alpha_0 + \beta_1 left_i + \beta_2 center_i + \epsilon_i
+\]</span></p>
+<p>However, there are a number of different ways to specify the model. Since I can no longer display the mean of the response variable by group (as I did above), I establish a baseline by estimating a model with all party groups and no intercept. After that, I can drop the right share which is the reference category in the first model to demonstrate how both models are connected.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_drop_right <span class="ot">&lt;-</span> <span class="fu">lm</span>(social_spend_pc <span class="sc">~</span> left <span class="sc">+</span> center, <span class="at">data =</span> data_party_share)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_no_intercept <span class="ot">&lt;-</span> <span class="fu">lm</span>(social_spend_pc <span class="sc">~</span> left <span class="sc">+</span> center <span class="sc">+</span> right <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> data_party_share)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>fmt_coef <span class="ot">&lt;-</span> <span class="cf">function</span>(cs, term) {</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>term <span class="sc">%in%</span> <span class="fu">rownames</span>(cs)) {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="st">"—"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sprintf</span>(<span class="st">"%.2f (%.2f)"</span>, cs[term, <span class="dv">1</span>], cs[term, <span class="dv">2</span>])</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>cs_drop_right <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_drop_right))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>cs_no_intercept <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_no_intercept))</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>terms <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"left"</span>, <span class="st">"center"</span>, <span class="st">"right"</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>table_out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Term =</span> terms,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">No_Intercept</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"—"</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_no_intercept, <span class="st">"left"</span>),</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_no_intercept, <span class="st">"center"</span>),</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_no_intercept, <span class="st">"right"</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">No_Right</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_drop_right, <span class="st">"(Intercept)"</span>),</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_drop_right, <span class="st">"left"</span>),</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fmt_coef</span>(cs_drop_right, <span class="st">"center"</span>),</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ref"</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  table_out,</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"lcc"</span>,</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Party-share regressions with different baselines"</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Party-share regressions with different baselines</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: center;">No_Intercept</th>
+<th style="text-align: center;">No_Right</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">517.22 (120.67)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">left</td>
+<td style="text-align: center;">6987.47 (114.32)</td>
+<td style="text-align: center;">6470.26 (199.61)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">center</td>
+<td style="text-align: center;">1460.77 (113.01)</td>
+<td style="text-align: center;">943.56 (194.27)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">right</td>
+<td style="text-align: center;">517.22 (120.67)</td>
+<td style="text-align: center;">ref</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The no-intercept model displays the expected level of social spending per capita if a given party held all cabinet seats (i.e., its share equals 1 and the other shares equal 0). For example, the coefficient for <code>left</code> of about 7000 means that if a government were composed entirely of left parties, I would expect social spending per capita to be almost 7000. Similarly, the coefficients for <code>center</code> and <code>right</code> show the expected spending levels under hypothetical all-center or all-right governments. This specification serves as a diagnostic baseline because it shows the direction and magnitude of each party share’s association with social spending.</p>
+<p>In the second model with an intercept, the right shares variable is absorbed into the intercept, and each remaining coefficient becomes a contrast against the omitted share rather than a standalone predicted level. The coefficient for <code>intercept</code> is now the expected level of social spending per capita if a government were composed entirely of right parties (i.e., right share equals 1 and the other shares equal 0). The coefficients for <code>left</code> and <code>center</code> are now interpreted as the expected change in social spending per capita for a one-unit (i.e., 100 percentage point) increase in the left (center) share and a simultaneous one-unit decrease in the right share, holding the center (left) share variable constant. Thus, the relationship between the left share and social spending can be mathematically expressed as follows:</p>
+<p><span class="math display">\[E(SocialSpendingpc \mid left=1, center=0, right=0) = \alpha_0 + \beta_1\]</span></p>
+<p>Adding the coefficient for the <code>intercept</code> and the coefficient for <code>left</code> in the second model reproduces the coefficient for <code>left</code> in the no-intercept model. This means that the expected level of social spending per capita if a government were composed entirely of left parties is the sum of the coefficient for <code>intercept</code> and the coefficient for <code>left</code> in the second model, which matches the coefficient for <code>left</code> in the no-intercept model. The same logic applies to the center share.</p>
+<p>The example illustrates that models with share variables are subject to the same issues of reference categories as models with categorical predictors. The interpretation of the coefficients depends on which share(s) are omitted from the model, and the choice of reference category can change the substantive interpretation of the results.</p>
 
 
 </section>

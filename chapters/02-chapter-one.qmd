@@ -1,12 +1,12 @@
 ---
-title: "Reference Categories and Baseline Groups"
+title: "Categorical and Compositional Predictors: A Guide"
 ---
 
-## Categorical Predictor Variables
+## Binary Predictor Variables
 
-We already talked about how to interpret coefficients in a regression model. What we have not discussed is that the interpretation that a coefficient as the expected change in the response variable for a one-unit increase in the predictor variable, holding all other predictors constant, only applies to continuous predictor variables. For categorical predictors and other kind of bounded variables, the interpretation is different.
+I already discussed how to interpret coefficients in a regression model. What I have not discussed is that the interpretation of a coefficient as the expected change in the response variable for a one-unit increase in the predictor variable (holding all other predictors constant) is most direct when a one-unit change is substantively meaningful. For binary and categorical predictors, coefficients are instead interpreted as differences between categories defined by the coding scheme. This has consequences for how we specify models and interpret results as I will show in the following.
 
-Let's imagine we investigate the relationship between gender and political donations. We have a binary variable `gender` that takes the value of 0 for men and 1 for women. We run a regression model with `gender` as the predictor variable and `donationAmount` as the response variable:
+Suppose I study the relationship between gender and political donations. I have a binary variable `gender` coded 0 for men and 1 for women and `donationAmount` in US dollars. To understand how categorical variables work in regression analysis, I start by computing the average donation amount for men and women:
 
 ```{r}
 #| label: simulate-gender-donation
@@ -28,14 +28,44 @@ data <- data.frame(
 ```
 
 ```{r}
-summary(lm(donationAmount ~ factor(gender), data = data))
+#| label: gender-means-table
+mean_donation <- aggregate(donationAmount ~ gender, data = data, FUN = mean)
+mean_donation$gender <- c("Men", "Women")
+colnames(mean_donation) <- c("Gender", "Mean Donation Amount")
+knitr::kable(mean_donation, digits = 2)
 ```
 
+As the table shows, men donate on average 98.75 dollars, while women donate on average 148.22 dollars. With that in mind, I estimate a regression model with `donationAmount` as the response variable and `gender` as the predictor variable. Mathematically, the model can be written as follows:
 
-The result shows that the coefficient for `gender` with the value 1 is 50. However, what does that mean? Since no one can become one unit more woman, another interpretation is needed. In case of a binary variable, the interpretation is straightforward: The coefficient of the group that is in the model specification is compared to the group that is not in the model specification. In this case, the coefficient of 50 for `gender1` means that women donate on average 50 dollars more than men. The group that is not in the model specification, in this case men, is called the reference category or baseline group. The choice of the reference category is arbitrary and does not affect the overall fit of the model, but it does affect the interpretation of the coefficients.
+$$donationAmount_i = \alpha_0 + \beta_1 gender_i + \epsilon_i$$
 
-The logic becomes a bit more complex when we have more than two categories. For instance, let's assume we have another categorical variable called `party identification` with four possible values: `Left`, `Center`, `Right`, and `Other`. To estimate the effect of a respondent's `party identification` on `donationAmount`, we need to choose at least one of the categories as the reference category. To illustrate the problem, we specify one regression model with `Other` as the reference category and another regression model with both `Right` and `Other` as the reference categories: 
- 
+In R, I estimate the model using the `lm()` function:
+
+```{r}
+lm(donationAmount ~ factor(gender), data = data)
+```
+
+I start with the interpretation of the results before digging deeper. The coefficient for `gender` is about 50. In the case of a binary variable, the interpretation is straightforward: The coefficient compares the coded group (1) to the reference group (0). More precisely, the coefficient of about 50 for `gender` means that women donate on average 50 dollars more than men.
+
+Comparing the regression output to the means table, I can highlight two points. First, the coefficient of the `intercept` is about 98.75, which is the average donation amount for men. Put differently, the `intercept` equals the mean of the reference category of men in this specification because, more generally, the intercept is the expected outcome when all predictors are zero and factors are at their baseline levels. This can be expressed mathematically:
+
+$$E(donationAmount \mid \text{men}) = \alpha_0$$
+
+This is why, when the model includes an intercept, one category must be omitted; otherwise the full set of dummies is perfectly collinear with the intercept (the dummy-variable trap). That means that if I included binary variables for both men and women in the model, the dummy variables would be perfectly collinear with the `intercept` and the model would not be estimable.
+
+Second, the coefficient for `gender` is about 50, which is the difference in mean donation amounts between men and women. Thus, the coefficient for `gender` does not give us the average donation amount for women, but rather the difference in average donation amounts between women and men. In turn, this means that the mean donation amount of women is the sum of the coefficient of the `intercept` and the coefficient for `gender`:  
+$$E(donationAmount \mid \text{women}) = \alpha_0 + \beta_1$$
+
+Lastly, the substantive interpretation of the results does not change if I alter the reference category. With pure releveling (changing only which category is omitted), fitted values and model fit stay the same, but coefficient labels and interpretations change. To illustrate this, I can relevel the `gender` variable so that women are the reference category and are omitted from the model:
+
+```{r}
+#| label: gender-baseline-women
+lm(donationAmount ~ relevel(factor(gender), ref = "1"), data = data)
+```
+
+As shown, the coefficient for `intercept` is now about 148, which is equal to the average donation amount for women according to the means table. The coefficient for `gender` (level 0) now displays the difference in donation amount of men compared to women. More precisely, it is now about -50, meaning that men donate on average 50 dollars less than women. Again, summing the coefficient of the `intercept` and the coefficient for `gender` gives the average donation amount for men. Thus, while the coefficients of `intercept` and `gender` have changed, the substantive interpretation of the results has not. The choice of reference category does not affect the substantive interpretation of the results, but it does affect how the coefficients are read.
+
+## Predictor Variables with More than Two Categories
 ```{r}
 #| label: simulate-party-donation
 #| echo: false
@@ -71,6 +101,37 @@ data_party <- data.frame(
 )
 ```
 
+The logic becomes a bit more complex when I have more than two categories. For instance, suppose I have another categorical variable called `party identification` with four possible groups: `Left`, `Center`, `Right`, and `Other`. To illustrate the link between reference categories and group means, I display the average donation amount for each `party identification` group in the table below. In addition, I add a row for the average donation amount for the combined `Right` and `Other` group, which will help me to illustrate what changes when I omit multiple categories (instead of one category) in the regression model.
+
+```{r}
+#| label: party-means-table
+mean_party <- aggregate(donationAmount ~ party, data = data.frame(
+  party = party,
+  donationAmount = donationAmount
+), FUN = mean)
+mean_ro <- mean(donationAmount[party %in% c("Right", "Other")])
+mean_party <- rbind(
+  mean_party,
+  data.frame(party = "Right + Other", donationAmount = mean_ro)
+)
+colnames(mean_party) <- c("Party", "Mean Donation Amount")
+knitr::kable(mean_party, digits = 2)
+```
+
+
+To estimate the relationship of a respondent's `party identification` and `donationAmount` in a linear regression model, I need to choose one of the categories as the reference category. To illustrate what happens when I omit more than one category, I specify one regression model with `Other` as the reference category and another regression model with `Right` and `Other` jointly omitted (a pooled reference category). Mathematically, the first model can be written as follows:
+
+$$
+donationAmount_i  = \alpha_0 + \beta_1 left_i + \beta_2 center_i + \beta_3 right_i + \epsilon_i
+$$
+
+With `Right` and `Other` pooled into a single reference category, the second model becomes:
+
+$$
+donationAmount_i = \alpha_0 + \beta_1 left_i + \beta_2 center_i + \epsilon_i
+$$
+
+
 ```{r}
 # Leave out "Other" as the reference category
 model_other_ref <- lm(donationAmount ~ left + center + right, data = data_party)
@@ -88,17 +149,19 @@ fmt_coef <- function(cs, term) {
 cs_other <- coef(summary(model_other_ref))
 cs_ro_ref <- coef(summary(model_ro_ref))
 
-terms <- c("Left", "Center", "Right", "Other")
+terms <- c("(Intercept)", "Left", "Center", "Right", "Other")
 
 table_out <- data.frame(
   Term = terms,
   `Ref:Other` = c(
+    fmt_coef(cs_other, "(Intercept)"),
     fmt_coef(cs_other, "left"),
     fmt_coef(cs_other, "center"),
     fmt_coef(cs_other, "right"),
     "ref"
   ),
   `Ref:Right_Other` = c(
+    fmt_coef(cs_ro_ref, "(Intercept)"),
     fmt_coef(cs_ro_ref, "left"),
     fmt_coef(cs_ro_ref, "center"),
     "ref",
@@ -113,10 +176,105 @@ knitr::kable(
   caption = "Party effects with different reference categories"
 )
 ```
-The first column of the tables shows the results when `Other` is the reference category. This means the coefficients for `Left`, `Center`, and `Right` are interpreted relative to `Other` category. For instance, the coefficient for `Left` with a value of 40 means that voters who identify as `Left` donate on average 40 dollars more than voters who identify as `Other`. However, the coefficient for `Left` changes considerably when we leave out the `Right` category as well. The reason is that the coefficient for `Left` in the second column has to be interpreted relative to the `Other` and `Right` category. Voters who identify as `Right` donate on average 23 dollars more than voters who identify as `Other` (see first column) and thus have the second largest coefficient in the first column. Consequently, leaving the `Right` category out, the coefficient for `Left` in the second column has now to be compared against `Other` and the - generously donating - `Right` category. As a result, the coefficient for `Left` becomes much smaller in the second column.
+
+The first column of the table reports estimates with `Other` as the reference category, so the coefficients for `Left`, `Center`, and `Right` are each interpreted relative to `Other`. This means that the coefficient of the `intercept` is the average donation amount for respondents identifying as `Other`, and the coefficients for `Left`, `Center`, and `Right` show how much more (or less) respondents in these groups donate on average compared to respondents in `Other`. As shown before, the results can be easily cross-checked with the means table. While the coefficient for the `intercept` in the regression is equal to the mean donation amount for `Other` respondents in the means table, the coefficients for `Left`, `Center`, and `Right` have to be added to the `intercept` to get the mean donation amount for these groups, which matches the values in the means table as well. For example, the average donation amount for `Left` respondents in the first column can be deduced as follows:
+$$E(donationAmount \mid \text{Left}) = \alpha_0 + \beta_1 $$ 
+
+which is about 101.14 + 39.77 = 140.91 dollars, which matches roughly the average donation amount for `Left` respondents in the means table (aside from differences in rounding). The same logic can be applied to the coefficients for `Center` and `Right`.
+
+In the second column, however, I change the specification by omitting `Right` as well, which means `Right` and `Other` are pooled into a single reference category. Thus, this is not merely releveling; it is a different model specification because it compares `Left` and `Center` to `Right` and `Other`. Coefficients therefore change meaning. While the interpretation is still straightforward as before, the estimand is different from the first model.
+
+More precisely, the coefficient for the `intercept` in the second column is now the average donation amount for respondents identifying as `Right` or `Other`. This can be confirmed by comparing the coefficient of the `intercept` with the row for `Right` or `Other` in the means table. This also means that the coefficients for `Left` and `Center` are now interpreted as the difference in average donation amounts between respondents identifying as either `Left` or `Center` on one hand and respondents identifying as `Right` or `Other` on the other hand. And since the coefficient of the `intercept` increased by almost 17 dollars compared to the first column, the coefficients for `Left` and `Center` decreased accordingly. For instance, the coefficient for `Center` is now negative, which reflects the fact that the average donation amount for respondents identifying as `Center` is 2.35 dollars less than the average donation amount for respondents identifying as `Right` or `Other` as the means table shows. 
+
+The main takeaway is that with pure releveling, fitted values and model fit do not change; only coefficient labels and comparisons do. With pooling reference categories, you change the comparison group and therefore the estimand and the substantive conclusions that you can draw.
 
 ## Shares
 
-One common case that is subject to the same problem of reference categories but is rarely discussed in the literature is the case of shares. For instance, researchers are often interested in the effect of the share of the population living in urban areas, the share of the agricultural or industrial work force, the share of ethnic or religious groups, or the share of the population with a certain level of education on some outcome (to name but a few examples). In all these cases, the share variable is bounded between 0 and 1 and thus has a reference category at both ends of the spectrum. For instance, if we have a variable that measures the share of the population living in urban areas, then the reference category for a value of 0 is that no one lives in urban areas (and everybody lives in rural areas), while the reference category for a value of 1 is that everyone lives in urban areas (and no one lives in rural areas). This means that the interpretation of the coefficients for share variables can be quite complex and depends on the number of categories.
+Another case that is subject to the same problem of reference categories but is often underemphasized in the literature is the case of shares. For instance, researchers are often interested in the effect of the share of the population living in urban areas, the share of the agricultural or industrial workforce, the share of ethnic or religious groups, or the share of the population with a certain level of education on some outcome (to name but a few examples). In all these cases, the share variable is bounded between 0 and 1 and thus has an implicit complement (e.g., rural share = 1 − urban share). For instance, if I have a variable that measures the share of the population living in urban areas, then a value of 0 means everyone is in the complement category, and a value of 1 means no one is in the complement category. This means that the interpretation of the coefficients for share variables is subject to the same problems as before and depends on the number of categories and on which share(s) are omitted from the model.
 
-A quite prominent example is the literature on the relationship between the ideological composition of government and spending patterns. A typical setup is to use total government spending or social security spending as the response variable and the share of specific parties in government as the predictor variable. Here again, the interpretation of the coefficient for the share of specific parties in government depends on the reference category. In some specifications, only the share of left-wing parties is included as a predictor variable, while in other specifications, the share of left-wing and center or Christian parties is included. The interpretation of the coefficient for the share of left-wing parties in government changes considerably depending on whether the share of other types of parties is included in the model specification or left out as reference category. Thus, the interpretation of the coefficients for share variables is the same as for categorical variables with the difference that share variables can take on a continuous range of values between 0 and 1, while categorical variables take on discrete values.
+To illustrate the problem, consider party shares in government. Suppose I observe the share of cabinet seats held by left, center, and right parties. Each share is between 0 and 1 and the three shares sum to 1. Because the shares sum to 1, these relationships are always interpreted as shifts in composition (increasing one share necessarily decreases at least one other share). I also observe social spending per capita which serves as the response variable.
+
+```{r}
+#| label: simulate-party-shares
+#| echo: false
+
+set.seed(2026)
+
+n <- 400
+
+raw_shares <- matrix(rgamma(n * 3, shape = 2, rate = 1), ncol = 3)
+shares <- raw_shares / rowSums(raw_shares)
+
+left <- shares[, 1]
+center <- shares[, 2]
+right <- shares[, 3]
+
+social_spend_pc <- 3000 + 4000 * left - 1500 * center - 2500 * right +
+  rnorm(n, mean = 0, sd = 600)
+
+data_party_share <- data.frame(
+  left = left,
+  center = center,
+  right = right,
+  social_spend_pc = social_spend_pc
+)
+```
+
+Because the shares sum to 1, one share must be omitted when I include an intercept. If I omit the right share, the model can be written as:
+
+$$
+SocialSpendingpc_i = \alpha_0 + \beta_1 left_i + \beta_2 center_i + \epsilon_i
+$$
+
+However, there are a number of different ways to specify the model. Since I can no longer display the mean of the response variable by group (as I did above), I establish a baseline by estimating a model with all party groups and no intercept. After that, I can drop the right share which is the reference category in the first model to demonstrate how both models are connected.
+
+```{r}
+#| label: model-party-shares
+model_drop_right <- lm(social_spend_pc ~ left + center, data = data_party_share)
+model_no_intercept <- lm(social_spend_pc ~ left + center + right - 1, data = data_party_share)
+
+fmt_coef <- function(cs, term) {
+  if (!term %in% rownames(cs)) {
+    return("—")
+  }
+  sprintf("%.2f (%.2f)", cs[term, 1], cs[term, 2])
+}
+
+cs_drop_right <- coef(summary(model_drop_right))
+cs_no_intercept <- coef(summary(model_no_intercept))
+
+terms <- c("(Intercept)", "left", "center", "right")
+
+table_out <- data.frame(
+  Term = terms,
+  `No_Intercept` = c(
+    "—",
+    fmt_coef(cs_no_intercept, "left"),
+    fmt_coef(cs_no_intercept, "center"),
+    fmt_coef(cs_no_intercept, "right")
+  ),
+  `No_Right` = c(
+    fmt_coef(cs_drop_right, "(Intercept)"),
+    fmt_coef(cs_drop_right, "left"),
+    fmt_coef(cs_drop_right, "center"),
+    "ref"
+  ),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(
+  table_out,
+  align = "lcc",
+  caption = "Party-share regressions with different baselines"
+)
+```
+
+The no-intercept model displays the expected level of social spending per capita if a given party held all cabinet seats (i.e., its share equals 1 and the other shares equal 0). For example, the coefficient for `left` of about 7000 means that if a government were composed entirely of left parties, I would expect social spending per capita to be almost 7000. Similarly, the coefficients for `center` and `right` show the expected spending levels under hypothetical all-center or all-right governments. This specification serves as a diagnostic baseline because it shows the direction and magnitude of each party share's association with social spending. 
+
+In the second model with an intercept, the right shares variable is absorbed into the intercept, and each remaining coefficient becomes a contrast against the omitted share rather than a standalone predicted level. The coefficient for `intercept` is now the expected level of social spending per capita if a government were composed entirely of right parties (i.e., right share equals 1 and the other shares equal 0). The coefficients for `left` and `center` are now interpreted as the expected change in social spending per capita for a one-unit (i.e., 100 percentage point) increase in the left (center) share and a simultaneous one-unit decrease in the right share, holding the center (left) share variable constant. Thus, the relationship between the left share and social spending can be mathematically expressed as follows:
+
+$$E(SocialSpendingpc \mid left=1, center=0, right=0) = \alpha_0 + \beta_1$$
+
+Adding the coefficient for the `intercept` and the coefficient for `left` in the second model reproduces the coefficient for `left` in the no-intercept model. This means that the expected level of social spending per capita if a government were composed entirely of left parties is the sum of the coefficient for `intercept` and the coefficient for `left` in the second model, which matches the coefficient for `left` in the no-intercept model. The same logic applies to the center share.  
+
+The example illustrates that models with share variables are subject to the same issues of reference categories as models with categorical predictors. The interpretation of the coefficients depends on which share(s) are omitted from the model, and the choice of reference category can change the substantive interpretation of the results.

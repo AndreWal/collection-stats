@@ -19,3 +19,4 @@ format:
     toc: true
     number-sections: true
     html-math-method: mathjax
+    css: styles.css

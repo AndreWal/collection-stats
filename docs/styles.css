@@ -1,0 +1,8 @@
+/* Left-align display math blocks for consistent baseline equations. */
+.mjx-container[display="true"] {
+  text-align: left !important;
+}
+
+.math.display {
+  text-align: left !important;
+}
