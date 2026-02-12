@@ -5,14 +5,12 @@ project:
     browser: false
 
 book:
-  title: "But what does it mean?"
+  title: "From Beta to Meaning: A Guide to Interpreting Regression Analysis"
   author: "André Walter"
   chapters:
     - index.qmd
-    - preface.qmd
-    - chapters/01-introduction.qmd
-    - chapters/02-chapter-one.qmd
-    - chapters/03-chapter-two.qmd
+    - chapters/Categorical_Compositional.qmd
+    - chapters/Interaction_Polynomials.qmd
 
 format:
   html:

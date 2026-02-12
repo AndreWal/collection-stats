@@ -2,6 +2,8 @@
 title: "Categorical and Compositional Predictors: A Guide"
 ---
 
+*Disclaimer: All data used in this chapter is simulated and does not reflect real-world data. The purpose of this chapter is to illustrate the concept of categorical and compositional predictors in regression analysis, not to make any claims about the relationship between gender, party identification, and political donations or party shares and social spending.*
+
 ## Binary Predictor Variables
 
 I already discussed how to interpret coefficients in a regression model. What I have not discussed is that the interpretation of a coefficient as the expected change in the response variable for a one-unit increase in the predictor variable (holding all other predictors constant) is most direct when a one-unit change is substantively meaningful. For binary and categorical predictors, coefficients are instead interpreted as differences between categories defined by the coding scheme. This has consequences for how we specify models and interpret results as I will show in the following.
@@ -188,9 +190,9 @@ More precisely, the coefficient for the `intercept` in the second column is now 
 
 The main takeaway is that with pure releveling, fitted values and model fit do not change; only coefficient labels and comparisons do. With pooling reference categories, you change the comparison group and therefore the estimand and the substantive conclusions that you can draw.
 
-## Shares
+## Compositional Predictors
 
-Another case that is subject to the same problem of reference categories but is often underemphasized in the literature is the case of shares. For instance, researchers are often interested in the effect of the share of the population living in urban areas, the share of the agricultural or industrial workforce, the share of ethnic or religious groups, or the share of the population with a certain level of education on some outcome (to name but a few examples). In all these cases, the share variable is bounded between 0 and 1 and thus has an implicit complement (e.g., rural share = 1 − urban share). For instance, if I have a variable that measures the share of the population living in urban areas, then a value of 0 means everyone is in the complement category, and a value of 1 means no one is in the complement category. This means that the interpretation of the coefficients for share variables is subject to the same problems as before and depends on the number of categories and on which share(s) are omitted from the model.
+Another case that faces the same reference category problem, yet is often underemphasized in the literature, is compositional predictors, where values are interpretable only relative to one another and are constrained to sum to a constant, typically 1 or 100%. For instance, researchers are often interested in the effect of the share of the population living in urban areas, the share of the agricultural or industrial workforce, the share of ethnic or religious groups, or the share of the population with a certain level of education on some outcome (to name but a few examples). In all these cases, the share variable is bounded between 0 and 1 and thus has an implicit complement (e.g., rural share = 1 − urban share). For instance, if I have a variable that measures the share of the population living in urban areas, then a value of 0 means everyone is in the complement category, and a value of 1 means no one is in the complement category. This means that the interpretation of the coefficients for share variables is subject to the same problems as before and depends on the number of categories and on which share(s) are omitted from the model.
 
 To illustrate the problem, consider party shares in government. Suppose I observe the share of cabinet seats held by left, center, and right parties. Each share is between 0 and 1 and the three shares sum to 1. Because the shares sum to 1, these relationships are always interpreted as shifts in composition (increasing one share necessarily decreases at least one other share). I also observe social spending per capita which serves as the response variable.
 

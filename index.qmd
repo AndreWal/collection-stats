@@ -1,9 +1,69 @@
 ---
-title: "But what does it mean?"
+title: "From Beta to Meaning"
 ---
 
-Welcome to the book. This is the landing page for the HTML version.
+*This collection is a work-in-progress. New articles will be added over time.*
 
-## How to read
+## Why this collection?
 
-Use the navigation sidebar to move between chapters.
+Why publish another set of articles on statistics when there are already many excellent resources? There are strong introductions at every level, mathematical, applied, and software-focused, and many are freely available. Some emphasize theory and proofs; others emphasize implementation in R, Python, Stata, or SQL; still others are field-specific (biostatistics, engineering, economics, business, and more).
+
+This collection exists for two reasons.
+
+First, the skill mix in quantitative work is changing. AI coding assistants can already generate a large share of routine statistical code quickly, and this capability is improving fast. As a result, the comparative advantage of researchers and data analysts is shifting away from writing every line by hand and toward:
+
+- framing the right question,
+- translating that question into a defensible statistical strategy,
+- checking assumptions and model diagnostics,
+- evaluating robustness and uncertainty, and
+- explaining results clearly to technical and non-technical audiences.
+
+In other words, implementation still matters, but interpretation, judgment, and communication matter even more.
+
+Second, I wanted to build the resource I wish I had during my PhD. Traditional textbooks taught the formal material well, but many practical research decisions were left implicit: Which method is appropriate here? What trade-offs am I making? What can go wrong in real data? How should results be interpreted and communicated?
+
+These articles aim to close that gap. They connect core statistical ideas to real research workflows, with concise explanations, worked examples, and decision-oriented guidance.
+
+## What this collection is (and is not)
+
+This is a practice-oriented companion to formal training in statistics.
+
+It is:
+
+- concept-first,
+- example-driven,
+- focused on decision-making,
+- explicit about assumptions, limitations, and interpretation.
+
+It is not:
+
+- a replacement for a full introductory statistics course,
+- a complete reference for every method,
+- a programming manual.
+
+## Prerequisites
+
+You do not need advanced mathematics to begin.
+
+Recommended background:
+
+- high-school algebra,
+- basic comfort with graphs and percentages,
+- curiosity about data and uncertainty.
+
+Helpful but optional:
+
+- prior exposure to R (for reading code snippets),
+- basic probability notation.
+
+Most chapters avoid heavy notation. When formulas appear, the focus is on interpretation rather than derivation.
+
+## Disclaimer
+
+All datasets are simulated. They are designed for learning and do not represent real individuals or institutions.
+
+Code snippets are included to illustrate ideas, not to provide production-ready software. The examples are written in R, but the conceptual lessons transfer to other languages and tools. You are encouraged to adapt, test, and extend the code for your own use cases.
+
+## How to read this book
+
+Each article is self-contained, so you can read them in any order. To deepen your understanding, use this collection alongside a comprehensive textbook or a formal course that provides stronger theoretical foundations.

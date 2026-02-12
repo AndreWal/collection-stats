@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Context Matters: A Guide to Interaction Terms – But what does it mean?</title>
+<title>3&nbsp; Context Matters: A Guide to Interaction Terms – But what does it mean?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/02-chapter-one.html" rel="prev">
+<link href="../chapters/Categorical_Compositional.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -144,7 +144,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/03-chapter-two.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/Interaction_Polynomials.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -177,20 +177,14 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  <a href="../chapters/Categorical_Compositional.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/02-chapter-one.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/03-chapter-two.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span></a>
+  <a href="../chapters/Interaction_Polynomials.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span></a>
   </div>
 </li>
     </ul>
@@ -203,9 +197,9 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#interaction-terms-as-context" id="toc-interaction-terms-as-context" class="nav-link active" data-scroll-target="#interaction-terms-as-context"><span class="header-section-number">4.1</span> Interaction Terms as Context</a></li>
-  <li><a href="#what-is-an-interaction-term" id="toc-what-is-an-interaction-term" class="nav-link" data-scroll-target="#what-is-an-interaction-term"><span class="header-section-number">4.2</span> What is an Interaction Term?</a></li>
-  <li><a href="#a-brief-digression-polynomial-regression" id="toc-a-brief-digression-polynomial-regression" class="nav-link" data-scroll-target="#a-brief-digression-polynomial-regression"><span class="header-section-number">4.3</span> A Brief Digression: Polynomial Regression</a></li>
+  <li><a href="#interaction-terms-as-context" id="toc-interaction-terms-as-context" class="nav-link active" data-scroll-target="#interaction-terms-as-context"><span class="header-section-number">3.1</span> Interaction Terms as Context</a></li>
+  <li><a href="#what-is-an-interaction-term" id="toc-what-is-an-interaction-term" class="nav-link" data-scroll-target="#what-is-an-interaction-term"><span class="header-section-number">3.2</span> What is an Interaction Term?</a></li>
+  <li><a href="#a-brief-digression-polynomial-regression" id="toc-a-brief-digression-polynomial-regression" class="nav-link" data-scroll-target="#a-brief-digression-polynomial-regression"><span class="header-section-number">3.3</span> A Brief Digression: Polynomial Regression</a></li>
   </ul>
 </nav>
     </div>
@@ -214,7 +208,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></h1>
 </div>
 
 
@@ -232,24 +226,24 @@ window.Quarto = {
 
 
 <p><em>Disclaimer: All data used in this chapter is simulated and does not reflect real-world data. The purpose of this chapter is to illustrate the concept of interaction terms in linear regression models, not to make any claims about the relationship between age, income, and ideological placement.</em></p>
-<section id="interaction-terms-as-context" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="interaction-terms-as-context"><span class="header-section-number">4.1</span> Interaction Terms as Context</h2>
+<section id="interaction-terms-as-context" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="interaction-terms-as-context"><span class="header-section-number">3.1</span> Interaction Terms as Context</h2>
 <blockquote class="blockquote">
 <p>“If You Are Not a Liberal at 25, You Have No Heart. If You Are Not a Conservative at 35 You Have No Brain”</p>
 <p>— <a href="https://quoteinvestigator.com/2014/02/24/heart-head/">Quote Investigator</a></p>
 </blockquote>
 <p>Researchers often want to know whether relationships differ across contexts. We use ideological self-placement as the running example. More specifically, I want to know whether age affects left-right self-placement. In addition, I assume that income affects ideological leanings as well, meaning that voters at the lower end of the income distribution are typically more left than voters on the higher end of the income distribution. So, how can interaction terms help us understand the relationship between age, income and ideological placement? Does the relationship between age and ideological placement differ across income levels? If so, how can we model this relationship?</p>
 </section>
-<section id="what-is-an-interaction-term" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="what-is-an-interaction-term"><span class="header-section-number">4.2</span> What is an Interaction Term?</h2>
+<section id="what-is-an-interaction-term" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="what-is-an-interaction-term"><span class="header-section-number">3.2</span> What is an Interaction Term?</h2>
 <p>In this example, <code>income</code> is measured in tens of thousands, and <code>leftRight</code> is a 0-10 self-placement scale where higher values indicate more right-leaning views.</p>
 <p>We established in the previous chapter that a coefficient in a regression model represents the average effect of a predictor variable on the response variable, holding all other variables constant. However, this assumes that the effect of the predictor is the same across all contexts. Using a linear regression model with a continuous response variable <code>leftRight</code> and a predictor variable <code>age</code>, we can illustrate this point. Mathematically, our model without an interaction term looks as follows:</p>
 <p><span id="eq-reg"><span class="math display">\[
 leftRight_i = \alpha + \beta_1 age_i + \epsilon_i
-\tag{4.1}\]</span></span></p>
-<p><a href="#eq-reg" class="quarto-xref">Equation&nbsp;<span>4.1</span></a> shows that the marginal effect of a predictor variable in a linear regression model is represented by the coefficient <span class="math inline">\(\beta_1\)</span>. To understand interactions, it is helpful to know that the marginal effect of a predictor can be read directly from the equation because it is the partial derivative of the response variable with respect to the predictor variable. In our simple regression model, the marginal effect of <code>age</code> is <span class="math inline">\(\beta_1\)</span>, which means that for every one-unit increase in <code>age</code>, the expected change in <code>leftRight</code> is <span class="math inline">\(\beta_1\)</span> units. Mathematically, the partial derivative of <a href="#eq-reg" class="quarto-xref">Equation&nbsp;<span>4.1</span></a> can be expressed as: <span id="eq-derivative"><span class="math display">\[
+\tag{3.1}\]</span></span></p>
+<p><a href="#eq-reg" class="quarto-xref">Equation&nbsp;<span>3.1</span></a> shows that the marginal effect of a predictor variable in a linear regression model is represented by the coefficient <span class="math inline">\(\beta_1\)</span>. To understand interactions, it is helpful to know that the marginal effect of a predictor can be read directly from the equation because it is the partial derivative of the response variable with respect to the predictor variable. In our simple regression model, the marginal effect of <code>age</code> is <span class="math inline">\(\beta_1\)</span>, which means that for every one-unit increase in <code>age</code>, the expected change in <code>leftRight</code> is <span class="math inline">\(\beta_1\)</span> units. Mathematically, the partial derivative of <a href="#eq-reg" class="quarto-xref">Equation&nbsp;<span>3.1</span></a> can be expressed as: <span id="eq-derivative"><span class="math display">\[
 \frac{\partial leftRight_i}{\partial age_i} = \beta_1
-\tag{4.2}\]</span></span></p>
+\tag{3.2}\]</span></span></p>
 <p>In R, this model can be estimated using the <code>lm()</code> function as follows:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(</span>
@@ -278,11 +272,11 @@ F-statistic: 391.3 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>So, why is this important to understand interaction terms? An interaction term is essentially a multiplicative combination of two predictor variables. When we include an interaction term in our regression model, we simply add two predictors and their product to the equation. Let’s assume that we want to know whether the effect of <code>age</code> on <code>leftRight</code> depends on the income of a respondent. Our regression model with the interaction term would look like this: <span id="eq-reg-interaction"><span class="math display">\[
 leftRight_i = \alpha + \beta_1 age_i + \beta_2 income_i + \beta_3 (age_i \times income_i) + \epsilon_i
-\tag{4.3}\]</span></span></p>
-<p>If we take the partial derivative of <a href="#eq-reg-interaction" class="quarto-xref">Equation&nbsp;<span>4.3</span></a> with respect to <code>age</code>, we get: <span id="eq-derivative-interaction"><span class="math display">\[
+\tag{3.3}\]</span></span></p>
+<p>If we take the partial derivative of <a href="#eq-reg-interaction" class="quarto-xref">Equation&nbsp;<span>3.3</span></a> with respect to <code>age</code>, we get: <span id="eq-derivative-interaction"><span class="math display">\[
 \frac{\partial leftRight_i}{\partial age_i} = \beta_1 + \beta_3 income_i
-\tag{4.4}\]</span></span></p>
-<p>As <a href="#eq-derivative-interaction" class="quarto-xref">Equation&nbsp;<span>4.4</span></a> shows, the effect of <code>age</code> on <code>leftRight</code> is no longer constant but depends on the value of <code>income</code>. The coefficient <span class="math inline">\(\beta_3\)</span> represents the change in the effect of <code>age</code> for each one-unit increase in <code>income</code>. If <span class="math inline">\(\beta_3\)</span> is positive, it means that the effect of <code>age</code> on <code>leftRight</code> increases as income increases. Conversely, if <span class="math inline">\(\beta_3\)</span> is negative, it means that the effect of <code>age</code> on <code>leftRight</code> decreases as income increases.</p>
+\tag{3.4}\]</span></span></p>
+<p>As <a href="#eq-derivative-interaction" class="quarto-xref">Equation&nbsp;<span>3.4</span></a> shows, the effect of <code>age</code> on <code>leftRight</code> is no longer constant but depends on the value of <code>income</code>. The coefficient <span class="math inline">\(\beta_3\)</span> represents the change in the effect of <code>age</code> for each one-unit increase in <code>income</code>. If <span class="math inline">\(\beta_3\)</span> is positive, it means that the effect of <code>age</code> on <code>leftRight</code> increases as income increases. Conversely, if <span class="math inline">\(\beta_3\)</span> is negative, it means that the effect of <code>age</code> on <code>leftRight</code> decreases as income increases.</p>
 <p>In R, this would look like this:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(</span>
@@ -356,7 +350,7 @@ F-statistic: 851.9 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="03-chapter-two_files/figure-html/plot-interaction-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Interaction_Polynomials_files/figure-html/plot-interaction-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -421,21 +415,21 @@ F-statistic: 851.9 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="03-chapter-two_files/figure-html/plot-predicted-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Interaction_Polynomials_files/figure-html/plot-predicted-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>The plot shows that the predicted <code>leftRight</code> values increase with <code>age</code> for all three income levels, but the slope is steeper for higher-income respondents. This visualization provides an alternative way to understand how the relationship between <code>age</code> and <code>leftRight</code> changes across different income levels, compared to the previous plot of marginal effects. Which visualization is more informative depends on the research question and the audience.</p>
 </section>
-<section id="a-brief-digression-polynomial-regression" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="a-brief-digression-polynomial-regression"><span class="header-section-number">4.3</span> A Brief Digression: Polynomial Regression</h2>
+<section id="a-brief-digression-polynomial-regression" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="a-brief-digression-polynomial-regression"><span class="header-section-number">3.3</span> A Brief Digression: Polynomial Regression</h2>
 <p>We now extend the interaction idea to nonlinearity. In an interaction, the slope of one variable changes with another variable (x × z). With polynomial terms, the slope of a variable changes with its own level by including powers like x² and x³. Although both are multiplicative in form, polynomial terms are conventionally treated as predictor transformations (basis expansions), not as interaction terms. Using <code>age</code> as an example, our regression model with a cubic term would look like this: <span id="eq-reg-polynomial"><span class="math display">\[
 leftRight_i = \alpha + \beta_1 age_i + \beta_2 age_i^2 + \beta_3 age_i^3 + \epsilon_i
-\tag{4.5}\]</span></span></p>
-<p>The partial derivative of <a href="#eq-reg-polynomial" class="quarto-xref">Equation&nbsp;<span>4.5</span></a> with respect to <code>age</code> is: <span id="eq-derivative-polynomial"><span class="math display">\[
+\tag{3.5}\]</span></span></p>
+<p>The partial derivative of <a href="#eq-reg-polynomial" class="quarto-xref">Equation&nbsp;<span>3.5</span></a> with respect to <code>age</code> is: <span id="eq-derivative-polynomial"><span class="math display">\[
 \frac{\partial leftRight_i}{\partial age_i} = \beta_1 + 2 \beta_2 age_i + 3 \beta_3 age_i^2
-\tag{4.6}\]</span></span></p>
+\tag{3.6}\]</span></span></p>
 <p>In R, a polynomial regression can be estimated by either using the <code>poly()</code> function (or including the polynomial terms manually) as follows:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(</span>
@@ -516,7 +510,7 @@ F-statistic:    52 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="03-chapter-two_files/figure-html/plot-polynomial-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Interaction_Polynomials_files/figure-html/plot-polynomial-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -947,8 +941,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/02-chapter-one.html" class="pagination-link" aria-label="Categorical and Compositional Predictors: A Guide">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span>
+      <a href="../chapters/Categorical_Compositional.html" class="pagination-link" aria-label="Categorical and Compositional Predictors: A Guide">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

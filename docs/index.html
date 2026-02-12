@@ -8,7 +8,7 @@
 
 <meta name="author" content="André Walter">
 
-<title>But what does it mean?</title>
+<title>From Beta to Meaning: A Guide to Interpreting Regression Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -31,7 +31,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./preface.html" rel="next">
+<link href="./chapters/Categorical_Compositional.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -70,6 +70,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-sidebar floating">
@@ -81,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">But what does it mean?</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Beta to Meaning</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -96,7 +97,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">But what does it mean?</a> 
+      <a href="./">From Beta to Meaning: A Guide to Interpreting Regression Analysis</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -109,31 +110,19 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">But what does it mean?</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Beta to Meaning</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./preface.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Preface</span></span></a>
+  <a href="./chapters/Categorical_Compositional.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chapters/01-introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./chapters/02-chapter-one.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reference Categories and Baseline Groups</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./chapters/03-chapter-two.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Does it work? Well, it depends…</span></span></a>
+  <a href="./chapters/Interaction_Polynomials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span></a>
   </div>
 </li>
     </ul>
@@ -146,7 +135,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#how-to-read" id="toc-how-to-read" class="nav-link active" data-scroll-target="#how-to-read"><span class="header-section-number">0.1</span> How to read</a></li>
+  <li><a href="#why-this-collection" id="toc-why-this-collection" class="nav-link active" data-scroll-target="#why-this-collection"><span class="header-section-number">0.1</span> Why this collection?</a></li>
+  <li><a href="#what-this-collection-is-and-is-not" id="toc-what-this-collection-is-and-is-not" class="nav-link" data-scroll-target="#what-this-collection-is-and-is-not"><span class="header-section-number">0.2</span> What this collection is (and is not)</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites"><span class="header-section-number">0.3</span> Prerequisites</a></li>
+  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link" data-scroll-target="#disclaimer"><span class="header-section-number">0.4</span> Disclaimer</a></li>
+  <li><a href="#how-to-read-this-book" id="toc-how-to-read-this-book" class="nav-link" data-scroll-target="#how-to-read-this-book"><span class="header-section-number">0.5</span> How to read this book</a></li>
   </ul>
 </nav>
     </div>
@@ -155,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">But what does it mean?</h1>
+<h1 class="title">From Beta to Meaning: A Guide to Interpreting Regression Analysis</h1>
 </div>
 
 
@@ -178,10 +171,64 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Welcome to the book. This is the landing page for the HTML version.</p>
-<section id="how-to-read" class="level2" data-number="0.1">
-<h2 data-number="0.1" class="anchored" data-anchor-id="how-to-read"><span class="header-section-number">0.1</span> How to read</h2>
-<p>Use the navigation sidebar to move between chapters.</p>
+<p><em>This collection is a work-in-progress. New articles will be added over time.</em></p>
+<section id="why-this-collection" class="level2" data-number="0.1">
+<h2 data-number="0.1" class="anchored" data-anchor-id="why-this-collection"><span class="header-section-number">0.1</span> Why this collection?</h2>
+<p>Why publish another set of articles on statistics when there are already many excellent resources? There are strong introductions at every level, mathematical, applied, and software-focused, and many are freely available. Some emphasize theory and proofs; others emphasize implementation in R, Python, Stata, or SQL; still others are field-specific (biostatistics, engineering, economics, business, and more).</p>
+<p>This collection exists for two reasons.</p>
+<p>First, the skill mix in quantitative work is changing. AI coding assistants can already generate a large share of routine statistical code quickly, and this capability is improving fast. As a result, the comparative advantage of researchers and data analysts is shifting away from writing every line by hand and toward:</p>
+<ul>
+<li>framing the right question,</li>
+<li>translating that question into a defensible statistical strategy,</li>
+<li>checking assumptions and model diagnostics,</li>
+<li>evaluating robustness and uncertainty, and</li>
+<li>explaining results clearly to technical and non-technical audiences.</li>
+</ul>
+<p>In other words, implementation still matters, but interpretation, judgment, and communication matter even more.</p>
+<p>Second, I wanted to build the resource I wish I had during my PhD. Traditional textbooks taught the formal material well, but many practical research decisions were left implicit: Which method is appropriate here? What trade-offs am I making? What can go wrong in real data? How should results be interpreted and communicated?</p>
+<p>These articles aim to close that gap. They connect core statistical ideas to real research workflows, with concise explanations, worked examples, and decision-oriented guidance.</p>
+</section>
+<section id="what-this-collection-is-and-is-not" class="level2" data-number="0.2">
+<h2 data-number="0.2" class="anchored" data-anchor-id="what-this-collection-is-and-is-not"><span class="header-section-number">0.2</span> What this collection is (and is not)</h2>
+<p>This is a practice-oriented companion to formal training in statistics.</p>
+<p>It is:</p>
+<ul>
+<li>concept-first,</li>
+<li>example-driven,</li>
+<li>focused on decision-making,</li>
+<li>explicit about assumptions, limitations, and interpretation.</li>
+</ul>
+<p>It is not:</p>
+<ul>
+<li>a replacement for a full introductory statistics course,</li>
+<li>a complete reference for every method,</li>
+<li>a programming manual.</li>
+</ul>
+</section>
+<section id="prerequisites" class="level2" data-number="0.3">
+<h2 data-number="0.3" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">0.3</span> Prerequisites</h2>
+<p>You do not need advanced mathematics to begin.</p>
+<p>Recommended background:</p>
+<ul>
+<li>high-school algebra,</li>
+<li>basic comfort with graphs and percentages,</li>
+<li>curiosity about data and uncertainty.</li>
+</ul>
+<p>Helpful but optional:</p>
+<ul>
+<li>prior exposure to R (for reading code snippets),</li>
+<li>basic probability notation.</li>
+</ul>
+<p>Most chapters avoid heavy notation. When formulas appear, the focus is on interpretation rather than derivation.</p>
+</section>
+<section id="disclaimer" class="level2" data-number="0.4">
+<h2 data-number="0.4" class="anchored" data-anchor-id="disclaimer"><span class="header-section-number">0.4</span> Disclaimer</h2>
+<p>All datasets are simulated. They are designed for learning and do not represent real individuals or institutions.</p>
+<p>Code snippets are included to illustrate ideas, not to provide production-ready software. The examples are written in R, but the conceptual lessons transfer to other languages and tools. You are encouraged to adapt, test, and extend the code for your own use cases.</p>
+</section>
+<section id="how-to-read-this-book" class="level2" data-number="0.5">
+<h2 data-number="0.5" class="anchored" data-anchor-id="how-to-read-this-book"><span class="header-section-number">0.5</span> How to read this book</h2>
+<p>Each article is self-contained, so you can read them in any order. To deepen your understanding, use this collection alongside a comprehensive textbook or a formal course that provides stronger theoretical foundations.</p>
 
 
 </section>
@@ -608,8 +655,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./preface.html" class="pagination-link" aria-label="Preface">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Preface</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./chapters/Categorical_Compositional.html" class="pagination-link" aria-label="Categorical and Compositional Predictors: A Guide">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -1,0 +1,302 @@
+---
+title: "Context Matters: A Guide to Interaction Terms"
+---
+
+*Disclaimer: All data used in this chapter is simulated and does not reflect real-world data. The purpose of this chapter is to illustrate the concept of interaction terms in linear regression models, not to make any claims about the relationship between age, income, and ideological placement.*
+
+## Interaction Terms as Context
+
+> "If You Are Not a Liberal at 25, You Have No Heart. If You Are Not a Conservative at 35 You Have No Brain"
+>
+> — [Quote Investigator](https://quoteinvestigator.com/2014/02/24/heart-head/)
+
+Researchers often want to know whether relationships differ across contexts. We use ideological self-placement as the running example. More specifically, I want to know whether age affects left-right self-placement. In addition, I assume that income affects ideological leanings as well, meaning that voters at the lower end of the income distribution are typically more left than voters on the higher end of the income distribution. So, how can interaction terms help us understand the relationship between age, income and ideological placement? Does the relationship between age and ideological placement differ across income levels? If so, how can we model this relationship?
+
+## What is an Interaction Term?
+
+```{r}
+#| label: simulate-data
+#| echo: false
+
+set.seed(123)
+
+n <- 1000
+
+age <- runif(n, min = 18, max = 80)
+
+income <- runif(n, min = 2, max = 12)
+
+beta0 <- 2.5       # Intercept
+beta1 <- 0.02      # Main effect of age
+beta2 <- 0.15      # Main effect of income
+beta3 <- 0.004     # Interaction term (positive!)
+
+leftRight <- beta0 + beta1 * age + beta2 * income + beta3 * (age * income) + rnorm(n, 0, 0.8)
+
+leftRight <- pmin(pmax(leftRight, 0), 10)
+
+data <- data.frame(
+  leftRight = leftRight,
+  age = age,
+  income = income
+)
+```
+
+In this example, `income` is measured in tens of thousands, and `leftRight` is a 0-10 self-placement scale where higher values indicate more right-leaning views.
+
+We established in the previous chapter that a coefficient in a regression model represents the average effect of a predictor variable on the response variable, holding all other variables constant. However, this assumes that the effect of the predictor is the same across all contexts. Using a linear regression model with a continuous response variable `leftRight` and a predictor variable `age`, we can illustrate this point. Mathematically, our model without an interaction term looks as follows:
+
+$$
+leftRight_i = \alpha + \beta_1 age_i + \epsilon_i
+$$ {#eq-reg}
+
+@eq-reg shows that the marginal effect of a predictor variable in a linear regression model is represented by the coefficient $\beta_1$. To understand interactions, it is helpful to know that the marginal effect of a predictor can be read directly from the equation because it is the partial derivative of the response variable with respect to the predictor variable. In our simple regression model, the marginal effect of `age` is $\beta_1$, which means that for every one-unit increase in `age`, the expected change in `leftRight` is $\beta_1$ units. Mathematically, the partial derivative of @eq-reg can be expressed as: 
+$$
+\frac{\partial leftRight_i}{\partial age_i} = \beta_1
+$$ {#eq-derivative}
+
+In R, this model can be estimated using the `lm()` function as follows:
+
+```{r}
+summary(
+  lm(leftRight ~ age, data = data)
+)
+```
+
+So, why is this important to understand interaction terms? An interaction term is essentially a multiplicative combination of two predictor variables. When we include an interaction term in our regression model, we simply add two predictors and their product to the equation. Let's assume that we want to know whether the effect of `age` on `leftRight` depends on the income of a respondent. Our regression model with the interaction term would look like this: 
+$$
+leftRight_i = \alpha + \beta_1 age_i + \beta_2 income_i + \beta_3 (age_i \times income_i) + \epsilon_i
+$$ {#eq-reg-interaction}
+
+If we take the partial derivative of @eq-reg-interaction with respect to `age`, we get:
+$$
+\frac{\partial leftRight_i}{\partial age_i} = \beta_1 + \beta_3 income_i
+$$ {#eq-derivative-interaction} 
+
+As @eq-derivative-interaction shows, the effect of `age` on `leftRight` is no longer constant but depends on the value of `income`. The coefficient $\beta_3$ represents the change in the effect of `age` for each one-unit increase in `income`. If $\beta_3$ is positive, it means that the effect of `age` on `leftRight` increases as income increases. Conversely, if $\beta_3$ is negative, it means that the effect of `age` on `leftRight` decreases as income increases.
+
+In R, this would look like this:
+```{r}  
+summary(
+  lm(leftRight ~ age * income, data = data)
+)
+```
+(R adds the constitutive terms automatically when you use the `*` operator between two variables in the formula.)
+
+Even though it is more informative to plot the interaction to understand how the effect of `age` changes across different income levels, we can also look at the coefficients to get a sense of the interaction. 
+First, we can see that the coefficient for `age` is positive. However, the coefficient for `age` gives us only the effect of `age` when `income` is zero, which is not a meaningful value in this context. A solution here would be to center the `income` variable around its mean before including it in the regression model. This way, the coefficient for `age` would represent the effect of `age` at the average income level. 
+
+Second, the coefficient for the interaction term `age:income` is positive, which indicates that the effect of `age` on `leftRight` increases as income increases. This means that age is more strongly associated with rightward placement among higher-income respondents than among lower-income respondents. Therefore, the table alone already gives us a pretty good idea of the interaction, but it is often more intuitive to visualize it: 
+
+```{r}
+#| label: plot-interaction
+#| warning: false
+
+# Fit the model with interaction
+model <- lm(leftRight ~ age * income, data = data)
+
+# Extract coefficients and variance-covariance matrix
+coefs <- coef(model)
+vcov_matrix <- vcov(model)
+
+income_seq <- seq(2, 12, length.out = 100)
+
+effect <- coefs[2] + coefs[4] * income_seq
+
+se <- sqrt(vcov_matrix[2, 2] + 
+           income_seq^2 * vcov_matrix[4, 4] + 
+           2 * income_seq * vcov_matrix[2, 4])
+
+ci_lower <- effect - 1.96 * se
+ci_upper <- effect + 1.96 * se
+
+# Create plot
+plot(income_seq, effect, 
+     type = "l", 
+     lwd = 2,
+     ylim = c(min(ci_lower), max(ci_upper)),
+  xlab = "Income (tens of thousands)",
+  ylab = "Effect of Age on Left-Right Placement",
+  main = "Marginal Effect of Age by Income\n(with 95% Confidence Intervals)")
+
+# Add confidence interval as shaded region
+polygon(c(income_seq, rev(income_seq)), 
+        c(ci_upper, rev(ci_lower)),
+        col = rgb(0.2, 0.2, 0.8, 0.2),
+        border = NA)
+
+# Add reference line at y=0
+abline(h = 0, lty = 2, col = "gray", lwd = 1)
+
+# Re-plot the line on top
+lines(income_seq, effect, lwd = 2, col = "blue")
+```
+
+To plot the marginal effect of `age` on `leftRight` across different income levels, along with 95% confidence intervals, we use the coefficients and variance-covariance matrix from the fitted model. To compute variance for the confidence intervals, we apply the delta method:
+
+$$Var(\beta_1 + \beta_3 \cdot income) = Var(\beta_1) + income^2 \cdot Var(\beta_3) + 2 \cdot income \cdot Cov(\beta_1, \beta_3)$$
+
+The plot shows that the estimated effect of `age` is positive across the observed income range. This visualization gives us a much clearer picture of how the effect of `age` changes across income levels compared to a regression table. While `age` increases rightward placement for all income levels, the effect is much stronger for higher-income respondents than for lower-income respondents.
+
+An alternative way to visualize the interaction is to plot predicted values of `leftRight` across `age` for different income levels. To do so, we use the 10%, 50%, and 90% quantiles of the `income` variable to represent low, medium, and high income levels, respectively. We then plot the predicted `leftRight` values across `age` for these three income levels, along with confidence intervals.
+
+```{r}
+#| label: plot-predicted
+#| warning: false
+
+income_levels <- as.numeric(quantile(data$income, probs = c(0.1, 0.5, 0.9)))
+income_labels <- paste0(c("P10 = ", "P50 = ", "P90 = "), sprintf("%.1f", income_levels))
+age_grid <- seq(18, 80, length.out = 100)
+
+pred_grid <- expand.grid(
+  age = age_grid,
+  income = income_levels
+)
+
+pred_ci <- predict(model, newdata = pred_grid, interval = "confidence")
+pred_grid$leftRight_hat <- pred_ci[, "fit"]
+pred_grid$ci_lower <- pred_ci[, "lwr"]
+pred_grid$ci_upper <- pred_ci[, "upr"]
+
+plot(age_grid, pred_grid$leftRight_hat[pred_grid$income == income_levels[1]],
+     type = "l",
+     lwd = 2,
+     ylim = range(pred_grid$ci_lower, pred_grid$ci_upper),
+     xlab = "Age",
+     ylab = "Predicted Left-Right Placement",
+    main = "Predicted Left-Right by Age\n(at Income P10, P50, and P90)")
+
+polygon(c(age_grid, rev(age_grid)),
+        c(pred_grid$ci_upper[pred_grid$income == income_levels[1]],
+          rev(pred_grid$ci_lower[pred_grid$income == income_levels[1]])),
+        col = rgb(0, 0, 0, 0.15),
+        border = NA)
+
+lines(age_grid, pred_grid$leftRight_hat[pred_grid$income == income_levels[2]], lwd = 2, col = "blue")
+lines(age_grid, pred_grid$leftRight_hat[pred_grid$income == income_levels[3]], lwd = 2, col = "red")
+
+polygon(c(age_grid, rev(age_grid)),
+        c(pred_grid$ci_upper[pred_grid$income == income_levels[2]],
+          rev(pred_grid$ci_lower[pred_grid$income == income_levels[2]])),
+        col = rgb(0, 0, 1, 0.15),
+        border = NA)
+
+polygon(c(age_grid, rev(age_grid)),
+        c(pred_grid$ci_upper[pred_grid$income == income_levels[3]],
+          rev(pred_grid$ci_lower[pred_grid$income == income_levels[3]])),
+        col = rgb(1, 0, 0, 0.15),
+        border = NA)
+
+lines(age_grid, pred_grid$leftRight_hat[pred_grid$income == income_levels[1]], lwd = 2, col = "black")
+lines(age_grid, pred_grid$leftRight_hat[pred_grid$income == income_levels[2]], lwd = 2, col = "blue")
+lines(age_grid, pred_grid$leftRight_hat[pred_grid$income == income_levels[3]], lwd = 2, col = "red")
+
+legend("topleft",
+  legend = income_labels,
+       lwd = 2,
+       col = c("black", "blue", "red"),
+       bty = "n")
+```
+
+The plot shows that the predicted `leftRight` values increase with `age` for all three income levels, but the slope is steeper for higher-income respondents. This visualization provides an alternative way to understand how the relationship between `age` and `leftRight` changes across different income levels, compared to the previous plot of marginal effects. Which visualization is more informative depends on the research question and the audience.
+
+## A Brief Digression: Polynomial Regression
+```{r}
+#| label: simulate-data2
+#| echo: false
+
+set.seed(123)
+
+n <- 1000
+
+age <- runif(n, min = 18, max = 80)
+
+beta0 <- 3.0         # Intercept
+beta1 <- 0.225       # Linear effect of age
+beta2 <- -0.0045     # Quadratic effect of age
+beta3 <- 0.00003     # Cubic effect of age (positive for U-shape marginal effect)
+
+leftRight <- beta0 + beta1 * age + beta2 * (age * age) + beta3 * (age * age * age) + rnorm(n, 0, 0.8)
+
+leftRight <- pmin(pmax(leftRight, 0), 10)
+
+data2 <- data.frame(
+  leftRight = leftRight,
+  age = age
+)
+```
+
+We now extend the interaction idea to nonlinearity. In an interaction, the slope of one variable changes with another variable (x × z). With polynomial terms, the slope of a variable changes with its own level by including powers like x² and x³. Although both are multiplicative in form, polynomial terms are conventionally treated as predictor transformations (basis expansions), not as interaction terms. Using `age` as an example, our regression model with a cubic term would look like this:
+$$
+leftRight_i = \alpha + \beta_1 age_i + \beta_2 age_i^2 + \beta_3 age_i^3 + \epsilon_i
+$$ {#eq-reg-polynomial} 
+
+The partial derivative of @eq-reg-polynomial with respect to `age` is:
+$$
+\frac{\partial leftRight_i}{\partial age_i} = \beta_1 + 2 \beta_2 age_i + 3 \beta_3 age_i^2
+$$ {#eq-derivative-polynomial}  
+
+In R, a polynomial regression can be estimated by either using the `poly()` function (or including the polynomial terms manually) as follows:
+```{r}
+summary(
+  lm(leftRight ~ poly(age, degree = 3, raw = TRUE), data = data2)
+)
+```
+
+And the plot of the marginal effect of `age` on `leftRight` would look like this:
+```{r}
+#| label: plot-polynomial
+#| warning: false
+
+# Fit the polynomial regression model with raw polynomials
+model_poly <- lm(leftRight ~ age + I(age^2) + I(age^3), data = data2) 
+
+# Extract coefficients and variance-covariance matrix
+coefs <- coef(model_poly)
+vcov_matrix <- vcov(model_poly)
+
+# Create age sequence for prediction
+age_seq <- seq(18, 80, length.out = 100)
+
+# Calculate marginal effect: β₁ + 2*β₂*age + 3*β₃*age²
+effect <- coefs[2] + 2 * coefs[3] * age_seq + 3 * coefs[4] * age_seq^2
+
+# Delta method for standard error:
+# For f(β) = β₁ + 2*β₂*age + 3*β₃*age², gradient is [1, 2*age, 3*age²]
+# SE = sqrt(gradient' * Vcov * gradient)
+se <- sqrt(vcov_matrix[2, 2] + 
+           4 * age_seq^2 * vcov_matrix[3, 3] + 
+           9 * age_seq^4 * vcov_matrix[4, 4] +
+           4 * age_seq * vcov_matrix[2, 3] +
+           6 * age_seq^2 * vcov_matrix[2, 4] +
+           12 * age_seq^3 * vcov_matrix[3, 4])
+
+# Calculate 95% confidence intervals
+ci_lower <- effect - 1.96 * se
+ci_upper <- effect + 1.96 * se
+
+# Create plot
+plot(age_seq, effect, 
+     type = "l", 
+     lwd = 2,
+     ylim = c(min(ci_lower), max(ci_upper)),
+     xlab = "Age",
+    ylab = "Marginal Effect of Age on Left-Right Placement",
+     main = "Marginal Effect of Age\n(with 95% Confidence Intervals)")
+
+# Add confidence interval as shaded region
+polygon(c(age_seq, rev(age_seq)), 
+        c(ci_upper, rev(ci_lower)),
+        col = rgb(0.8, 0.2, 0.2, 0.2),
+        border = NA)
+
+# Add reference line at y=0
+abline(h = 0, lty = 2, col = "gray", lwd = 1)
+
+# Re-plot the line on top
+lines(age_seq, effect, lwd = 2, col = "red")
+```
+
+The plot shows that the marginal effect of `age` on `leftRight` is positive but decreasing for younger respondents, becomes not statistically distinguishable from zero for respondents between mid-40s and mid-50s, and becomes positive and significant again for older respondents. This U-shaped pattern illustrates how polynomial regression can capture non-linear relationships between a predictor variable and a response variable. In this example, the relationship between `age` and `leftRight` follows a nonlinear pattern with changing slope that can be captured by including polynomial terms in the regression model. 
+
+Of course, other functional forms could be considered to capture different types of non-linear relationships. But the main point is that this example illustrates how polynomial regression can capture non-linear relationships between a predictor variable and a response variable.
