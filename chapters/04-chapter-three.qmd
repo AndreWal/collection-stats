@@ -1,5 +1,0 @@
----
-title: "Effect Sizes"
----
-
-## Measurement Error in Statistical Textbooks

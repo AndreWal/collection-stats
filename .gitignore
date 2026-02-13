@@ -1,4 +1,3 @@
-# Never commit local books folder
 books/
 
 /.quarto/
