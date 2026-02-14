@@ -11,6 +11,7 @@ book:
     - index.qmd
     - chapters/Categorical_Compositional.qmd
     - chapters/Interaction_Polynomials.qmd
+    - chapters/Comparing_Estimates.qmd
 
 format:
   html:
