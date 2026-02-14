@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference – From Beta to Meaning: A Guide to Interpreting Regression Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/Interaction_Polynomials.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-7bc9e07932f8ae97e807bea6fb42db08.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/Comparing_Estimates.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">From Beta to Meaning: A Guide to Interpreting Regression Analysis</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Beta to Meaning</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/Categorical_Compositional.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/Interaction_Polynomials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/Comparing_Estimates.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">4.1</span> Why This Chapter Exists</a></li>
+  <li><a href="#a-decision-tree-for-comparing-two-estimates" id="toc-a-decision-tree-for-comparing-two-estimates" class="nav-link" data-scroll-target="#a-decision-tree-for-comparing-two-estimates"><span class="header-section-number">4.2</span> A Decision Tree for Comparing Two Estimates</a></li>
+  <li><a href="#why-ci-overlap-and-threshold-crossing-are-unreliable" id="toc-why-ci-overlap-and-threshold-crossing-are-unreliable" class="nav-link" data-scroll-target="#why-ci-overlap-and-threshold-crossing-are-unreliable"><span class="header-section-number">4.3</span> Why CI Overlap and Threshold Crossing Are Unreliable</a></li>
+  <li><a href="#case-i-independent-samples-two-separate-experiments" id="toc-case-i-independent-samples-two-separate-experiments" class="nav-link" data-scroll-target="#case-i-independent-samples-two-separate-experiments"><span class="header-section-number">4.4</span> Case I — Independent Samples: Two Separate Experiments</a>
+  <ul class="collapse">
+  <li><a href="#the-tempting-but-wrong-analysis" id="toc-the-tempting-but-wrong-analysis" class="nav-link" data-scroll-target="#the-tempting-but-wrong-analysis"><span class="header-section-number">4.4.1</span> The Tempting but Wrong Analysis</a></li>
+  <li><a href="#correct-approach-a-direct-z-test-on-delta" id="toc-correct-approach-a-direct-z-test-on-delta" class="nav-link" data-scroll-target="#correct-approach-a-direct-z-test-on-delta"><span class="header-section-number">4.4.2</span> Correct Approach A: Direct z-Test on <span class="math inline">\(\Delta\)</span></a></li>
+  <li><a href="#correct-approach-b-pooled-model-with-interaction-term" id="toc-correct-approach-b-pooled-model-with-interaction-term" class="nav-link" data-scroll-target="#correct-approach-b-pooled-model-with-interaction-term"><span class="header-section-number">4.4.3</span> Correct Approach B: Pooled Model with Interaction Term</a></li>
+  <li><a href="#interpretation-template" id="toc-interpretation-template" class="nav-link" data-scroll-target="#interpretation-template"><span class="header-section-number">4.4.4</span> Interpretation Template</a></li>
+  </ul></li>
+  <li><a href="#case-ii-non-independent-estimates-same-units-split-over-time" id="toc-case-ii-non-independent-estimates-same-units-split-over-time" class="nav-link" data-scroll-target="#case-ii-non-independent-estimates-same-units-split-over-time"><span class="header-section-number">4.5</span> Case II — Non-Independent Estimates: Same Units Split over Time</a>
+  <ul class="collapse">
+  <li><a href="#the-tempting-but-wrong-analysis-split-and-compare" id="toc-the-tempting-but-wrong-analysis-split-and-compare" class="nav-link" data-scroll-target="#the-tempting-but-wrong-analysis-split-and-compare"><span class="header-section-number">4.5.1</span> The Tempting but Wrong Analysis: Split and Compare</a></li>
+  <li><a href="#the-correct-approach-pooled-interaction-model" id="toc-the-correct-approach-pooled-interaction-model" class="nav-link" data-scroll-target="#the-correct-approach-pooled-interaction-model"><span class="header-section-number">4.5.2</span> The Correct Approach: Pooled Interaction Model</a></li>
+  <li><a href="#robustness-alternative-break-years" id="toc-robustness-alternative-break-years" class="nav-link" data-scroll-target="#robustness-alternative-break-years"><span class="header-section-number">4.5.3</span> Robustness: Alternative Break Years</a></li>
+  </ul></li>
+  <li><a href="#case-iii-non-independent-estimates-geographic-split" id="toc-case-iii-non-independent-estimates-geographic-split" class="nav-link" data-scroll-target="#case-iii-non-independent-estimates-geographic-split"><span class="header-section-number">4.6</span> Case III — Non-Independent Estimates: Geographic Split</a>
+  <ul class="collapse">
+  <li><a href="#simple-pooled-interaction-model" id="toc-simple-pooled-interaction-model" class="nav-link" data-scroll-target="#simple-pooled-interaction-model"><span class="header-section-number">4.6.1</span> Simple Pooled Interaction Model</a></li>
+  <li><a href="#grouped-coefficient-plot" id="toc-grouped-coefficient-plot" class="nav-link" data-scroll-target="#grouped-coefficient-plot"><span class="header-section-number">4.6.2</span> Grouped Coefficient Plot</a></li>
+  <li><a href="#summary-table" id="toc-summary-table" class="nav-link" data-scroll-target="#summary-table"><span class="header-section-number">4.6.3</span> Summary Table</a></li>
+  <li><a href="#extension-hierarchical-models" id="toc-extension-hierarchical-models" class="nav-link" data-scroll-target="#extension-hierarchical-models"><span class="header-section-number">4.6.4</span> Extension: Hierarchical Models</a></li>
+  </ul></li>
+  <li><a href="#practical-pitfalls-and-reviewer-proof-reporting" id="toc-practical-pitfalls-and-reviewer-proof-reporting" class="nav-link" data-scroll-target="#practical-pitfalls-and-reviewer-proof-reporting"><span class="header-section-number">4.7</span> Practical Pitfalls and Reviewer-Proof Reporting</a></li>
+  <li><a href="#reporting-template" id="toc-reporting-template" class="nav-link" data-scroll-target="#reporting-template"><span class="header-section-number">4.8</span> Reporting Template</a></li>
+  <li><a href="#appendix-a-minimal-r-workflow" id="toc-appendix-a-minimal-r-workflow" class="nav-link" data-scroll-target="#appendix-a-minimal-r-workflow"><span class="header-section-number">4.9</span> Appendix A — Minimal R Workflow</a>
+  <ul class="collapse">
+  <li><a href="#independent-estimate-z-test" id="toc-independent-estimate-z-test" class="nav-link" data-scroll-target="#independent-estimate-z-test"><span class="header-section-number">4.9.1</span> Independent-Estimate z-Test</a></li>
+  <li><a href="#pooled-interaction-model" id="toc-pooled-interaction-model" class="nav-link" data-scroll-target="#pooled-interaction-model"><span class="header-section-number">4.9.2</span> Pooled Interaction Model</a></li>
+  <li><a href="#panel-interaction-with-clustered-se" id="toc-panel-interaction-with-clustered-se" class="nav-link" data-scroll-target="#panel-interaction-with-clustered-se"><span class="header-section-number">4.9.3</span> Panel Interaction with Clustered SE</a></li>
+  <li><a href="#bootstrap-alternative-for-complex-dependence" id="toc-bootstrap-alternative-for-complex-dependence" class="nav-link" data-scroll-target="#bootstrap-alternative-for-complex-dependence"><span class="header-section-number">4.9.4</span> Bootstrap Alternative for Complex Dependence</a></li>
+  </ul></li>
+  <li><a href="#appendix-b-which-method-when-cheat-sheet" id="toc-appendix-b-which-method-when-cheat-sheet" class="nav-link" data-scroll-target="#appendix-b-which-method-when-cheat-sheet"><span class="header-section-number">4.10</span> Appendix B — “Which Method When?” Cheat Sheet</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></h1>
+<p class="subtitle lead">From p-value thresholding to valid cross-group inference</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><em>Disclaimer: All data used in this chapter is simulated and does not reflect real-world data. The purpose of this chapter is to illustrate how to correctly compare estimates across groups, time periods, or contexts, not to make any claims about the real-world relationships used in the examples.</em></p>
+<section id="why-this-chapter-exists" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">4.1</span> Why This Chapter Exists</h2>
+<p>Researchers routinely compare findings across subgroups, time periods, or model specifications. A pattern I have seen again and again goes like this:</p>
+<blockquote class="blockquote">
+<p>Study A finds a statistically significant treatment effect (<span class="math inline">\(p &lt; .05\)</span>). Study B finds a non-significant effect (<span class="math inline">\(p = .12\)</span>). Conclusion: “The effect differs between the two settings.”</p>
+</blockquote>
+<p>That conclusion is wrong. Whether two estimates lie on different sides of an arbitrary threshold (like 0.05) is neither a necessary nor sufficient condition for concluding that they differ. In fact, two estimates that are significant at the 0.05 level can differ as two estimates that are not significant at the 0.05 level. The key question is whether the <strong>difference</strong> between the two estimates is statistically distinguishable from zero, not whether each estimate individually crosses a threshold. In other words, the estimand of interest is:</p>
+<p><span id="eq-delta"><span class="math display">\[
+\Delta = \hat\theta_1 - \hat\theta_2
+\tag{4.1}\]</span></span></p>
+<p>Throughout this chapter, I teach one core idea: <strong>your question is about <span class="math inline">\(\Delta\)</span>, not about whether each estimate individually crosses 0.05.</strong></p>
+<p>To make this concrete, consider a simple simulation. Two researchers run experiments with the same true treatment effect, but one has a slightly larger sample. Their estimates and p-values can easily fall on different sides of 0.05, even though the underlying effect is identical.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Two experiments with the SAME true effect (0.3)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>n_A <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n_B <span class="ot">&lt;-</span> <span class="dv">150</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>y_A_treat <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_A <span class="sc">/</span> <span class="dv">2</span>, <span class="at">mean =</span> <span class="fl">0.3</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>y_A_ctrl  <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_A <span class="sc">/</span> <span class="dv">2</span>, <span class="at">mean =</span> <span class="dv">0</span>,   <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>y_B_treat <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_B <span class="sc">/</span> <span class="dv">2</span>, <span class="at">mean =</span> <span class="fl">0.3</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>y_B_ctrl  <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_B <span class="sc">/</span> <span class="dv">2</span>, <span class="at">mean =</span> <span class="dv">0</span>,   <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>test_A <span class="ot">&lt;-</span> <span class="fu">t.test</span>(y_A_treat, y_A_ctrl)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>test_B <span class="ot">&lt;-</span> <span class="fu">t.test</span>(y_B_treat, y_B_ctrl)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Study A: estimate ="</span>, <span class="fu">round</span>(test_A<span class="sc">$</span>estimate[<span class="dv">1</span>] <span class="sc">-</span> test_A<span class="sc">$</span>estimate[<span class="dv">2</span>], <span class="dv">3</span>),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(test_A<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Study A: estimate = 0.08 , p = 0.5625 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Study B: estimate ="</span>, <span class="fu">round</span>(test_B<span class="sc">$</span>estimate[<span class="dv">1</span>] <span class="sc">-</span> test_B<span class="sc">$</span>estimate[<span class="dv">2</span>], <span class="dv">3</span>),</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(test_B<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Study B: estimate = 0.38 , p = 0.0136 </code></pre>
+</div>
+</div>
+<p>Even though both experiments draw from the same data-generating process with the same treatment effect, the p-values can easily end up on different sides of 0.05. Concluding that the effects “differ” would be a mistake of reasoning about thresholds rather than about the quantity of interest.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Wrong vs Right
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Wrong:</strong> Compare <span class="math inline">\(p_1 &lt; .05\)</span> and <span class="math inline">\(p_2 &gt; .05\)</span> and conclude the effects differ.</p>
+<p><strong>Right:</strong> Test <span class="math inline">\(H_0: \theta_1 - \theta_2 = 0\)</span> directly.</p>
+</div>
+</div>
+<p>The rest of this chapter shows how to do it right, across three common scenarios: independent samples, time-period splits on the same units, and geographic subgroup comparisons.</p>
+</section>
+<section id="a-decision-tree-for-comparing-two-estimates" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="a-decision-tree-for-comparing-two-estimates"><span class="header-section-number">4.2</span> A Decision Tree for Comparing Two Estimates</h2>
+<p>Before diving into specific cases, I provide a decision tree that structures the key choices. When comparing two estimates, three questions determine the appropriate method:</p>
+<p><strong>1. Are the estimates independent?</strong></p>
+<p>If the two estimates come from entirely separate samples with no shared units, they are independent. If the same individuals, countries, or other units contribute to both estimates, the estimates are correlated and the comparison must account for the covariance.</p>
+<p><strong>2. Is the model linear or nonlinear?</strong></p>
+<p>In linear models, differences in coefficients translate directly to differences in effects. In nonlinear models (logit, Poisson, etc.), coefficient differences do not map straightforwardly to differences in substantive quantities; in those cases, compare marginal effects or predicted probabilities instead.</p>
+<p><strong>3. Is this a single comparison or one of many?</strong></p>
+<p>If I perform many subgroup, time, or place comparisons, I need to adjust for multiple testing to avoid false discoveries.</p>
+<p>For the direct comparison of two estimates, two formulas are essential. When the estimates are <strong>independent</strong>:</p>
+<p><span id="eq-se-independent"><span class="math display">\[
+SE(\Delta) = \sqrt{SE(\hat\theta_1)^2 + SE(\hat\theta_2)^2}
+\tag{4.2}\]</span></span></p>
+<p>When the estimates are <strong>not independent</strong> (e.g., same units in both groups), the covariance must be accounted for:</p>
+<p><span id="eq-var-dependent"><span class="math display">\[
+Var(\Delta) = Var(\hat\theta_1) + Var(\hat\theta_2) - 2 \, Cov(\hat\theta_1, \hat\theta_2)
+\tag{4.3}\]</span></span></p>
+<p>The independence condition is crucial. If the same individuals or a subset of the same individuals appear in both groups, using <a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a> when <a href="#eq-var-dependent" class="quarto-xref">Equation&nbsp;<span>4.3</span></a> is required will produce incorrect standard errors, typically too large, making the test conservative but misleading (Altman &amp; Bland, 2003).</p>
+</section>
+<section id="why-ci-overlap-and-threshold-crossing-are-unreliable" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="why-ci-overlap-and-threshold-crossing-are-unreliable"><span class="header-section-number">4.3</span> Why CI Overlap and Threshold Crossing Are Unreliable</h2>
+<p>A related heuristic that researchers often use is: “The 95% confidence intervals overlap, so there is no significant difference.” This rule is not generally valid.</p>
+<p>For two <strong>independent</strong> estimates with equal standard errors, non-overlapping 95% CIs actually correspond to a test at roughly the 0.6% level, not the 5% level. In other words, the “no overlap” rule is far too strict: it will miss many true differences. Conversely, modest overlap does not mean the difference is zero.</p>
+<p>The following simulation illustrates this. I generate two independent estimates whose true difference is nonzero and show that the 95% CIs can overlap even when the direct test of <span class="math inline">\(\Delta\)</span> is significant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>theta_1 <span class="ot">&lt;-</span> <span class="fl">0.50</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>theta_2 <span class="ot">&lt;-</span> <span class="fl">0.20</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>se_1 <span class="ot">&lt;-</span> <span class="fl">0.12</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>se_2 <span class="ot">&lt;-</span> <span class="fl">0.11</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>hat_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, theta_1, se_1)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>hat_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, theta_2, se_2)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>ci_1 <span class="ot">&lt;-</span> hat_1 <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">*</span> <span class="fl">1.96</span> <span class="sc">*</span> se_1</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>ci_2 <span class="ot">&lt;-</span> hat_2 <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">*</span> <span class="fl">1.96</span> <span class="sc">*</span> se_2</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">&lt;-</span> hat_1 <span class="sc">-</span> hat_2</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>se_delta <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(se_1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> se_2<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>ci_delta <span class="ot">&lt;-</span> delta <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">*</span> <span class="fl">1.96</span> <span class="sc">*</span> se_delta</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>z_delta <span class="ot">&lt;-</span> delta <span class="sc">/</span> se_delta</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>p_delta <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fu">abs</span>(z_delta))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Estimate 1:"</span>, <span class="fu">round</span>(hat_1, <span class="dv">3</span>), <span class="st">" 95% CI: ["</span>, <span class="fu">round</span>(ci_1[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">","</span>, <span class="fu">round</span>(ci_1[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">"]</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Estimate 1: 0.665  95% CI: [ 0.429 , 0.9 ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Estimate 2:"</span>, <span class="fu">round</span>(hat_2, <span class="dv">3</span>), <span class="st">" 95% CI: ["</span>, <span class="fu">round</span>(ci_2[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">","</span>, <span class="fu">round</span>(ci_2[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">"]</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Estimate 2: 0.138  95% CI: [ -0.078 , 0.353 ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"CIs overlap:"</span>, ci_1[<span class="dv">1</span>] <span class="sc">&lt;</span> ci_2[<span class="dv">2</span>] <span class="sc">&amp;</span> ci_2[<span class="dv">1</span>] <span class="sc">&lt;</span> ci_1[<span class="dv">2</span>], <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CIs overlap: FALSE </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Difference:"</span>, <span class="fu">round</span>(delta, <span class="dv">3</span>), <span class="st">" SE:"</span>, <span class="fu">round</span>(se_delta, <span class="dv">3</span>),</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" 95% CI: ["</span>, <span class="fu">round</span>(ci_delta[<span class="dv">1</span>], <span class="dv">3</span>), <span class="st">","</span>, <span class="fu">round</span>(ci_delta[<span class="dv">2</span>], <span class="dv">3</span>), <span class="st">"]</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Difference: 0.527  SE: 0.163  95% CI: [ 0.208 , 0.846 ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"z ="</span>, <span class="fu">round</span>(z_delta, <span class="dv">3</span>), <span class="st">", p ="</span>, <span class="fu">round</span>(p_delta, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>z = 3.235 , p = 0.0012 </code></pre>
+</div>
+</div>
+<p>The figure below shows both perspectives side by side: the individual CIs (which may overlap) and the direct CI for <span class="math inline">\(\Delta\)</span> (which is the correct basis for inference).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Left panel: individual CIs</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span>, hat_1, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">2.5</span>), <span class="at">ylim =</span> <span class="fu">range</span>(<span class="fu">c</span>(ci_1, ci_2)) <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.05</span>, <span class="fl">0.05</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xaxt =</span> <span class="st">"n"</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">"Estimate"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Individual 95% CIs"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">1</span>, ci_1[<span class="dv">1</span>], <span class="dv">1</span>, ci_1[<span class="dv">2</span>], <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">2</span>, hat_2, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">2</span>, ci_2[<span class="dv">1</span>], <span class="dv">2</span>, ci_2[<span class="dv">2</span>], <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">hat</span>(theta)[<span class="dv">1</span>]), <span class="fu">expression</span>(<span class="fu">hat</span>(theta)[<span class="dv">2</span>])))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray"</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Shade overlap region</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>overlap_lo <span class="ot">&lt;-</span> <span class="fu">max</span>(ci_1[<span class="dv">1</span>], ci_2[<span class="dv">1</span>])</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>overlap_hi <span class="ot">&lt;-</span> <span class="fu">min</span>(ci_1[<span class="dv">2</span>], ci_2[<span class="dv">2</span>])</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (overlap_lo <span class="sc">&lt;</span> overlap_hi) {</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rect</span>(<span class="fl">0.5</span>, overlap_lo, <span class="fl">2.5</span>, overlap_hi,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">rgb</span>(<span class="dv">1</span>, <span class="fl">0.8</span>, <span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="fl">1.5</span>, (overlap_lo <span class="sc">+</span> overlap_hi) <span class="sc">/</span> <span class="dv">2</span>, <span class="st">"overlap"</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> <span class="st">"orange3"</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Right panel: difference CI</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span>, delta, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>), <span class="at">ylim =</span> <span class="fu">range</span>(ci_delta) <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.05</span>, <span class="fl">0.05</span>),</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>     <span class="at">xaxt =</span> <span class="st">"n"</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">"Difference"</span>,</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">expression</span>(<span class="st">"95% CI for "</span> <span class="sc">*</span> Delta), <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">col =</span> <span class="st">"darkgreen"</span>)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">1</span>, ci_delta[<span class="dv">1</span>], <span class="dv">1</span>, ci_delta[<span class="dv">2</span>], <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"darkgreen"</span>)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="dv">1</span>, <span class="at">labels =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(theta)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">hat</span>(theta)[<span class="dv">2</span>]))</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray"</span>)</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ci-overlap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ci-overlap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Comparing_Estimates_files/figure-html/fig-ci-overlap-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ci-overlap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% CI for the difference. CI overlap does not imply the difference is zero.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The key lesson is that CI overlap is a <strong>heuristic</strong>, not a replacement for a direct test. For independent estimates with equal variance, one can use approximately 83–84% CIs to achieve a visual test that corresponds to the 5% level, but I recommend always computing the direct test of <span class="math inline">\(\Delta\)</span> instead of relying on visual rules.</p>
+</section>
+<section id="case-i-independent-samples-two-separate-experiments" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="case-i-independent-samples-two-separate-experiments"><span class="header-section-number">4.4</span> Case I — Independent Samples: Two Separate Experiments</h2>
+<p>I now work through the first and simplest scenario: comparing treatment effects from two entirely separate experiments. Suppose two researchers each run a randomized experiment to evaluate whether a mobilization message increases voter turnout. Researcher A works with Sample A; Researcher B works with Sample B. The samples are completely independent.</p>
+<section id="the-tempting-but-wrong-analysis" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="the-tempting-but-wrong-analysis"><span class="header-section-number">4.4.1</span> The Tempting but Wrong Analysis</h3>
+<p>The tempting approach is to run separate regressions and compare the p-values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model_A <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnout <span class="sc">~</span> treat, <span class="at">data =</span> data_A)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>model_B <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnout <span class="sc">~</span> treat, <span class="at">data =</span> data_B)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- Sample A ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Sample A ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect:"</span>, <span class="fu">round</span>(<span class="fu">coef</span>(model_A)[<span class="st">"treat"</span>], <span class="dv">4</span>),</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_A)<span class="sc">$</span>coefficients[<span class="st">"treat"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">" p:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_A)<span class="sc">$</span>coefficients[<span class="st">"treat"</span>, <span class="st">"Pr(&gt;|t|)"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect: 0.1154  SE: 0.049  p: 0.0191 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- Sample B ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Sample B ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect:"</span>, <span class="fu">round</span>(<span class="fu">coef</span>(model_B)[<span class="st">"treat"</span>], <span class="dv">4</span>),</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_B)<span class="sc">$</span>coefficients[<span class="st">"treat"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">" p:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_B)<span class="sc">$</span>coefficients[<span class="st">"treat"</span>, <span class="st">"Pr(&gt;|t|)"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect: 0.0454  SE: 0.0526  p: 0.3885 </code></pre>
+</div>
+</div>
+<p>Looking at these results separately, one might conclude that the treatment “works” in one sample but “does not work” in the other, and therefore that the effects differ. But that reasoning is about thresholds, not about <span class="math inline">\(\Delta\)</span>.</p>
+</section>
+<section id="correct-approach-a-direct-z-test-on-delta" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="correct-approach-a-direct-z-test-on-delta"><span class="header-section-number">4.4.2</span> Correct Approach A: Direct z-Test on <span class="math inline">\(\Delta\)</span></h3>
+<p>Since the samples are independent, I can apply <a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a> directly:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>beta_A <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_A)[<span class="st">"treat"</span>]</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>beta_B <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_B)[<span class="st">"treat"</span>]</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>se_A <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_A)<span class="sc">$</span>coefficients[<span class="st">"treat"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>se_B <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_B)<span class="sc">$</span>coefficients[<span class="st">"treat"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">&lt;-</span> beta_A <span class="sc">-</span> beta_B</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>se_delta <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(se_A<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> se_B<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> delta <span class="sc">/</span> se_delta</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fu">abs</span>(z))</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Difference (A - B):"</span>, <span class="fu">round</span>(delta, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Difference (A - B): 0.07 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"SE of difference:  "</span>, <span class="fu">round</span>(se_delta, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>SE of difference:   0.0719 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"95% CI:            ["</span>, <span class="fu">round</span>(delta <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se_delta, <span class="dv">4</span>), <span class="st">","</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                             <span class="fu">round</span>(delta <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se_delta, <span class="dv">4</span>), <span class="st">"]</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>95% CI:            [ -0.0709 , 0.211 ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"z ="</span>, <span class="fu">round</span>(z, <span class="dv">3</span>), <span class="st">", p ="</span>, <span class="fu">round</span>(p, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>z = 0.974 , p = 0.3302 </code></pre>
+</div>
+</div>
+</section>
+<section id="correct-approach-b-pooled-model-with-interaction-term" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="correct-approach-b-pooled-model-with-interaction-term"><span class="header-section-number">4.4.3</span> Correct Approach B: Pooled Model with Interaction Term</h3>
+<p>The pedagogically clearer and often more practical approach is to estimate a single pooled model with an interaction term:</p>
+<p><span id="eq-interaction-independent"><span class="math display">\[
+Y_i = \alpha + \beta \, T_i + \gamma \, G_i + \delta \, (T_i \times G_i) + \varepsilon_i
+\tag{4.4}\]</span></span></p>
+<p>where <span class="math inline">\(T_i\)</span> is the treatment indicator, <span class="math inline">\(G_i\)</span> is a group indicator (0 = A, 1 = B), and <span class="math inline">\(\delta\)</span> is the coefficient of interest: it directly estimates the difference in treatment effects between the two groups. The treatment effect in group A is <span class="math inline">\(\beta\)</span>, and the treatment effect in group B is <span class="math inline">\(\beta + \delta\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>model_pooled <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnout <span class="sc">~</span> treat <span class="sc">*</span> group, <span class="at">data =</span> data_pooled)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_pooled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = turnout ~ treat * group, data = data_pooled)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.4709 -0.4278 -0.3554  0.5722  0.6445 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   0.35545    0.03378  10.522   &lt;2e-16 ***
+treat         0.11545    0.04915   2.349   0.0191 *  
+groupB        0.02690    0.05057   0.532   0.5949    
+treat:groupB -0.07002    0.07190  -0.974   0.3304    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4907 on 746 degrees of freedom
+Multiple R-squared:  0.00835,   Adjusted R-squared:  0.004362 
+F-statistic: 2.094 on 3 and 746 DF,  p-value: 0.09964</code></pre>
+</div>
+</div>
+<p>The coefficient on <code>treat:groupB</code> is <span class="math inline">\(\hat\delta\)</span>, which is the estimated difference in treatment effects. Note that this coefficient and its p-value correspond closely to the direct z-test above. This is not a coincidence: when both subgroup models use the same specification, the interaction approach and the direct comparison yield identical results in OLS.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>coefs_pooled <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_pooled)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>se_pooled <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_pooled)<span class="sc">$</span>coefficients[, <span class="st">"Std. Error"</span>]</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>effects <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  coefs_pooled[<span class="st">"treat"</span>],</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  coefs_pooled[<span class="st">"treat"</span>] <span class="sc">+</span> coefs_pooled[<span class="st">"treat:groupB"</span>],</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  coefs_pooled[<span class="st">"treat:groupB"</span>]</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>ses <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  se_pooled[<span class="st">"treat"</span>],</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>(se_pooled[<span class="st">"treat"</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> se_pooled[<span class="st">"treat:groupB"</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>       <span class="dv">2</span> <span class="sc">*</span> <span class="fu">vcov</span>(model_pooled)[<span class="st">"treat"</span>, <span class="st">"treat:groupB"</span>]),</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  se_pooled[<span class="st">"treat:groupB"</span>]</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Effect in A"</span>, <span class="st">"Effect in B"</span>, <span class="st">"Difference (A - B)"</span>)</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"blue"</span>, <span class="st">"darkgreen"</span>)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(effects, <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">xlim =</span> <span class="fu">range</span>(<span class="fu">c</span>(effects <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, effects <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses)),</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">yaxt =</span> <span class="st">"n"</span>, <span class="at">ylab =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">"Estimate"</span>,</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Treatment Effects and Their Difference"</span>,</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> cols, <span class="at">cex =</span> <span class="fl">1.3</span>)</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(effects <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, effects <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> cols)</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">at =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> labels, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-coefplot-independent" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-coefplot-independent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Comparing_Estimates_files/figure-html/fig-coefplot-independent-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-coefplot-independent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.2: Coefficient plot showing the treatment effect in each group and their difference. The difference (delta) answers the correct question.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretation-template" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="interpretation-template"><span class="header-section-number">4.4.4</span> Interpretation Template</h3>
+<p>When reporting this type of comparison, I recommend the following structure:</p>
+<blockquote class="blockquote">
+<p>“We estimated the treatment effect separately in each group (Sample A: <span class="math inline">\(\hat\beta_A\)</span>; Sample B: <span class="math inline">\(\hat\beta_B\)</span>). To test whether these effects differ, we estimated a pooled model with an interaction term between the treatment indicator and the group indicator. The estimated difference was <span class="math inline">\(\hat\delta\)</span> [95% CI: …, p = …], indicating [no evidence of / evidence of] a differential treatment effect across samples.”</p>
+</blockquote>
+</section>
+</section>
+<section id="case-ii-non-independent-estimates-same-units-split-over-time" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="case-ii-non-independent-estimates-same-units-split-over-time"><span class="header-section-number">4.5</span> Case II — Non-Independent Estimates: Same Units Split over Time</h2>
+<p>The second scenario is more subtle and more commonly mishandled. Suppose I have a panel dataset of countries observed over several decades, and I want to know whether the effect of a policy variable <span class="math inline">\(X\)</span> on an outcome <span class="math inline">\(Y\)</span> changed between two time periods (e.g., 1980–1999 vs 2000–2020). Because the same countries appear in both periods, the estimates are correlated. Applying the independent-samples formula (<a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a>) would be incorrect; I must use <a href="#eq-var-dependent" class="quarto-xref">Equation&nbsp;<span>4.3</span></a> instead.</p>
+<section id="the-tempting-but-wrong-analysis-split-and-compare" class="level3" data-number="4.5.1">
+<h3 data-number="4.5.1" class="anchored" data-anchor-id="the-tempting-but-wrong-analysis-split-and-compare"><span class="header-section-number">4.5.1</span> The Tempting but Wrong Analysis: Split and Compare</h3>
+<p>The tempting approach is to split the data by period and run separate regressions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>panel_early <span class="ot">&lt;-</span> panel[panel<span class="sc">$</span>post <span class="sc">==</span> <span class="dv">0</span>, ]</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>panel_late  <span class="ot">&lt;-</span> panel[panel<span class="sc">$</span>post <span class="sc">==</span> <span class="dv">1</span>, ]</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>model_early <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">factor</span>(country), <span class="at">data =</span> panel_early)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>model_late  <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">factor</span>(country), <span class="at">data =</span> panel_late)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- 1980-1999 ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 1980-1999 ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect of X:"</span>, <span class="fu">round</span>(<span class="fu">coef</span>(model_early)[<span class="st">"x"</span>], <span class="dv">4</span>),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_early)<span class="sc">$</span>coefficients[<span class="st">"x"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">" p:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_early)<span class="sc">$</span>coefficients[<span class="st">"x"</span>, <span class="st">"Pr(&gt;|t|)"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect of X: 0.5022  SE: 0.0554  p: 0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- 2000-2020 ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 2000-2020 ---</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect of X:"</span>, <span class="fu">round</span>(<span class="fu">coef</span>(model_late)[<span class="st">"x"</span>], <span class="dv">4</span>),</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_late)<span class="sc">$</span>coefficients[<span class="st">"x"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">" p:"</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model_late)<span class="sc">$</span>coefficients[<span class="st">"x"</span>, <span class="st">"Pr(&gt;|t|)"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect of X: 0.9102  SE: 0.0505  p: 0 </code></pre>
+</div>
+</div>
+<p>Comparing p-values from these two regressions tells us nothing about whether the effects differ. The correct approach is to estimate the difference directly, accounting for the correlation between periods.</p>
+</section>
+<section id="the-correct-approach-pooled-interaction-model" class="level3" data-number="4.5.2">
+<h3 data-number="4.5.2" class="anchored" data-anchor-id="the-correct-approach-pooled-interaction-model"><span class="header-section-number">4.5.2</span> The Correct Approach: Pooled Interaction Model</h3>
+<p>I estimate a single model on the full panel, including a period indicator and its interaction with <span class="math inline">\(X\)</span>:</p>
+<p><span id="eq-panel-interaction"><span class="math display">\[
+Y_{it} = \alpha_i + \tau_t + \beta \, X_{it} + \delta \, (X_{it} \times Post_t) + \varepsilon_{it}
+\tag{4.5}\]</span></span></p>
+<p>Here <span class="math inline">\(\alpha_i\)</span> are country fixed effects, <span class="math inline">\(\tau_t\)</span> captures time trends, <span class="math inline">\(\beta\)</span> is the effect of <span class="math inline">\(X\)</span> in the early period, and <span class="math inline">\(\delta\)</span> is <strong>the change in the effect between periods</strong>, which is the quantity of interest.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>model_panel <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">*</span> post <span class="sc">+</span> <span class="fu">factor</span>(country) <span class="sc">+</span> <span class="fu">factor</span>(year), <span class="at">data =</span> panel)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_panel)<span class="sc">$</span>coefficients</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect in 1980-1999 (beta):   "</span>, <span class="fu">round</span>(coefs[<span class="st">"x"</span>, <span class="st">"Estimate"</span>], <span class="dv">4</span>),</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(coefs[<span class="st">"x"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect in 1980-1999 (beta):    0.5031  SE: 0.0542 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Change after 2000 (delta):    "</span>, <span class="fu">round</span>(coefs[<span class="st">"x:post"</span>, <span class="st">"Estimate"</span>], <span class="dv">4</span>),</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(coefs[<span class="st">"x:post"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">" p:"</span>, <span class="fu">round</span>(coefs[<span class="st">"x:post"</span>, <span class="st">"Pr(&gt;|t|)"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Change after 2000 (delta):     0.3979  SE: 0.0748  p: 0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect in 2000-2020 (beta+delta):"</span>, <span class="fu">round</span>(coefs[<span class="st">"x"</span>, <span class="st">"Estimate"</span>] <span class="sc">+</span> coefs[<span class="st">"x:post"</span>, <span class="st">"Estimate"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect in 2000-2020 (beta+delta): 0.901 </code></pre>
+</div>
+</div>
+<p>The coefficient <code>x:post</code> (<span class="math inline">\(\hat\delta\)</span>) directly tests whether the effect of <span class="math inline">\(X\)</span> changed between the two periods, properly accounting for the fact that the same countries appear in both periods. The country fixed effects absorb country-level confounders, and year fixed effects absorb common time trends.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On Clustering Standard Errors
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In panel settings, the error terms <span class="math inline">\(\varepsilon_{it}\)</span> are typically correlated within countries over time. For robust inference, cluster standard errors at the panel-unit level (here: country). In designs where there is also cross-sectional dependence, two-way clustering (by country and by year) may be appropriate. I use the <code>sandwich</code> and <code>lmtest</code> packages when clustering is needed:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(model_panel, <span class="at">vcov =</span> <span class="fu">vcovCL</span>(model_panel, <span class="at">cluster =</span> panel<span class="sc">$</span>country))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="robustness-alternative-break-years" class="level3" data-number="4.5.3">
+<h3 data-number="4.5.3" class="anchored" data-anchor-id="robustness-alternative-break-years"><span class="header-section-number">4.5.3</span> Robustness: Alternative Break Years</h3>
+<p>When the break year (here: 2000) is chosen by the researcher, it is good practice to show that results are not sensitive to this choice. I re-estimate the model using alternative break years and plot how <span class="math inline">\(\hat\delta\)</span> varies:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>break_years <span class="ot">&lt;-</span> <span class="dv">1990</span><span class="sc">:</span><span class="dv">2010</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>deltas <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(break_years))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>ses <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(break_years))</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(break_years)) {</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  panel<span class="sc">$</span>post_alt <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(panel<span class="sc">$</span>year <span class="sc">&gt;=</span> break_years[i])</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">*</span> post_alt <span class="sc">+</span> <span class="fu">factor</span>(country), <span class="at">data =</span> panel)</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  cs <span class="ot">&lt;-</span> <span class="fu">summary</span>(m)<span class="sc">$</span>coefficients</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"x:post_alt"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(cs)) {</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    deltas[i] <span class="ot">&lt;-</span> cs[<span class="st">"x:post_alt"</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>    ses[i] <span class="ot">&lt;-</span> cs[<span class="st">"x:post_alt"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(break_years, deltas, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">range</span>(<span class="fu">c</span>(deltas <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, deltas <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses)),</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Break Year"</span>, <span class="at">ylab =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(delta)),</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Sensitivity of Effect Change to Break Year"</span>)</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(break_years, <span class="fu">rev</span>(break_years)),</span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(deltas <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="fu">rev</span>(deltas <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses)),</span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">rgb</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span>), <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(break_years, deltas, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray"</span>)</span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">2000</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">2000</span>, <span class="fu">max</span>(deltas <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses) <span class="sc">*</span> <span class="fl">0.9</span>, <span class="st">"chosen break"</span>, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">pos =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-break-robustness" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-break-robustness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Comparing_Estimates_files/figure-html/fig-break-robustness-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-break-robustness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.3: Estimated change in the effect of X (delta) for different break years. The shaded region shows the 95% CI.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Structural Break Tests
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For designs where the break date is part of the hypothesis (rather than imposed by the researcher), formal structural break tests exist. The Chow test evaluates a known break date; the supremum Wald test (Andrews, 1993; Bai &amp; Perron, 1998) can detect unknown break dates. These are available in the <code>strucchange</code> package in R.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="case-iii-non-independent-estimates-geographic-split" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="case-iii-non-independent-estimates-geographic-split"><span class="header-section-number">4.6</span> Case III — Non-Independent Estimates: Geographic Split</h2>
+<p>The third scenario involves comparing estimates across geographic subgroups. Suppose I want to know whether the effect of social spending on inequality is different in Northern vs Southern European countries. The same logic applies: I should not run separate regressions and compare p-values. Instead, I estimate a single model with a region indicator and its interaction with the predictor of interest.</p>
+<section id="simple-pooled-interaction-model" class="level3" data-number="4.6.1">
+<h3 data-number="4.6.1" class="anchored" data-anchor-id="simple-pooled-interaction-model"><span class="header-section-number">4.6.1</span> Simple Pooled Interaction Model</h3>
+<p>I estimate a model that includes the region indicator and its interaction with social spending:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>geo_data<span class="sc">$</span>south <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(geo_data<span class="sc">$</span>region <span class="sc">==</span> <span class="st">"South"</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>model_geo <span class="ot">&lt;-</span> <span class="fu">lm</span>(inequality <span class="sc">~</span> spend <span class="sc">*</span> south <span class="sc">+</span> <span class="fu">factor</span>(country), <span class="at">data =</span> geo_data)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>cs_geo <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_geo)<span class="sc">$</span>coefficients</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect in North (beta):       "</span>, <span class="fu">round</span>(cs_geo[<span class="st">"spend"</span>, <span class="st">"Estimate"</span>], <span class="dv">4</span>),</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(cs_geo[<span class="st">"spend"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect in North (beta):        -0.8552  SE: 0.0653 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Difference South - North (delta):"</span>, <span class="fu">round</span>(cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Estimate"</span>], <span class="dv">4</span>),</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" SE:"</span>, <span class="fu">round</span>(cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">" p:"</span>, <span class="fu">round</span>(cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Pr(&gt;|t|)"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Difference South - North (delta): 0.6453  SE: 0.0971  p: 0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Effect in South (beta+delta): "</span>, <span class="fu">round</span>(cs_geo[<span class="st">"spend"</span>, <span class="st">"Estimate"</span>] <span class="sc">+</span> cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Estimate"</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Effect in South (beta+delta):  -0.2099 </code></pre>
+</div>
+</div>
+<p>The coefficient on <code>spend:south</code> directly tests whether the relationship between social spending and inequality differs across regions.</p>
+</section>
+<section id="grouped-coefficient-plot" class="level3" data-number="4.6.2">
+<h3 data-number="4.6.2" class="anchored" data-anchor-id="grouped-coefficient-plot"><span class="header-section-number">4.6.2</span> Grouped Coefficient Plot</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>eff_north <span class="ot">&lt;-</span> cs_geo[<span class="st">"spend"</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>eff_south <span class="ot">&lt;-</span> cs_geo[<span class="st">"spend"</span>, <span class="st">"Estimate"</span>] <span class="sc">+</span> cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>eff_diff  <span class="ot">&lt;-</span> cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>se_north <span class="ot">&lt;-</span> cs_geo[<span class="st">"spend"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>se_south <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(cs_geo[<span class="st">"spend"</span>, <span class="st">"Std. Error"</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Std. Error"</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>                 <span class="dv">2</span> <span class="sc">*</span> <span class="fu">vcov</span>(model_geo)[<span class="st">"spend"</span>, <span class="st">"spend:south"</span>])</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>se_diff  <span class="ot">&lt;-</span> cs_geo[<span class="st">"spend:south"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>effects <span class="ot">&lt;-</span> <span class="fu">c</span>(eff_north, eff_south, eff_diff)</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>ses <span class="ot">&lt;-</span> <span class="fu">c</span>(se_north, se_south, se_diff)</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"North"</span>, <span class="st">"South"</span>, <span class="st">"Difference</span><span class="sc">\n</span><span class="st">(South - North)"</span>)</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"steelblue"</span>, <span class="st">"firebrick"</span>, <span class="st">"darkgreen"</span>)</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(effects, <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">xlim =</span> <span class="fu">range</span>(<span class="fu">c</span>(effects <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, effects <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses)),</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">yaxt =</span> <span class="st">"n"</span>, <span class="at">ylab =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">"Estimate"</span>,</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Effect of Social Spending on Inequality"</span>,</span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> cols, <span class="at">cex =</span> <span class="fl">1.3</span>)</span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(effects <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, effects <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> cols)</span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">at =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">labels =</span> labels, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-geo-coefplot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-geo-coefplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Comparing_Estimates_files/figure-html/fig-geo-coefplot-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-geo-coefplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.4: Effect of social spending on inequality by region, with the estimated difference.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-table" class="level3" data-number="4.6.3">
+<h3 data-number="4.6.3" class="anchored" data-anchor-id="summary-table"><span class="header-section-number">4.6.3</span> Summary Table</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>results_geo <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Group =</span> <span class="fu">c</span>(<span class="st">"North"</span>, <span class="st">"South"</span>, <span class="st">"Difference (South - North)"</span>),</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">round</span>(effects, <span class="dv">3</span>),</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">SE =</span> <span class="fu">round</span>(ses, <span class="dv">3</span>),</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">CI_lower =</span> <span class="fu">round</span>(effects <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="dv">3</span>),</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">CI_upper =</span> <span class="fu">round</span>(effects <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> ses, <span class="dv">3</span>)</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(results_geo, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Group"</span>, <span class="st">"Estimate"</span>, <span class="st">"SE"</span>, <span class="st">"95% CI Lower"</span>, <span class="st">"95% CI Upper"</span>),</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">"Effect of social spending on inequality by region"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Effect of social spending on inequality by region</caption>
+<colgroup>
+<col style="width: 39%">
+<col style="width: 13%">
+<col style="width: 8%">
+<col style="width: 19%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Group</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">95% CI Lower</th>
+<th style="text-align: right;">95% CI Upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">North</td>
+<td style="text-align: right;">-0.855</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: right;">-0.983</td>
+<td style="text-align: right;">-0.727</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">South</td>
+<td style="text-align: right;">-0.210</td>
+<td style="text-align: right;">0.072</td>
+<td style="text-align: right;">-0.351</td>
+<td style="text-align: right;">-0.069</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Difference (South - North)</td>
+<td style="text-align: right;">0.645</td>
+<td style="text-align: right;">0.097</td>
+<td style="text-align: right;">0.455</td>
+<td style="text-align: right;">0.836</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="extension-hierarchical-models" class="level3" data-number="4.6.4">
+<h3 data-number="4.6.4" class="anchored" data-anchor-id="extension-hierarchical-models"><span class="header-section-number">4.6.4</span> Extension: Hierarchical Models</h3>
+<p>For richer heterogeneity across many countries or regions, a hierarchical (multilevel) model with random slopes can be useful. Instead of a single North/South split, I let the effect of spending vary by country:</p>
+<p><span class="math display">\[
+Y_{it} = \alpha_i + (\beta + u_i) \, X_{it} + \varepsilon_{it}
+\]</span></p>
+<p>where <span class="math inline">\(u_i \sim N(0, \sigma_u^2)\)</span> captures country-specific deviations from the average effect. This approach allows me to see the full distribution of effects rather than collapsing everything into two groups:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>model_hier <span class="ot">&lt;-</span> <span class="fu">lmer</span>(inequality <span class="sc">~</span> spend <span class="sc">+</span> (spend <span class="sc">|</span> country), <span class="at">data =</span> geo_data)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract country-level random slopes</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>ranefs <span class="ot">&lt;-</span> <span class="fu">ranef</span>(model_hier)<span class="sc">$</span>country</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>fixef_spend <span class="ot">&lt;-</span> <span class="fu">fixef</span>(model_hier)[<span class="st">"spend"</span>]</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>country_effects <span class="ot">&lt;-</span> fixef_spend <span class="sc">+</span> ranefs<span class="sc">$</span>spend</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Average effect:"</span>, <span class="fu">round</span>(fixef_spend, <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Average effect: -0.559 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"SD of country effects:"</span>, <span class="fu">round</span>(<span class="fu">sd</span>(country_effects), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>SD of country effects: 0.246 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Range:"</span>, <span class="fu">round</span>(<span class="fu">min</span>(country_effects), <span class="dv">3</span>), <span class="st">"to"</span>, <span class="fu">round</span>(<span class="fu">max</span>(country_effects), <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Range: -1.015 to -0.204 </code></pre>
+</div>
+</div>
+<p>The hierarchical approach is especially useful when the number of groups is too large for a simple factor interaction, or when I want to partially pool estimates toward a common mean to stabilize noisy group-level estimates.</p>
+</section>
+</section>
+<section id="practical-pitfalls-and-reviewer-proof-reporting" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="practical-pitfalls-and-reviewer-proof-reporting"><span class="header-section-number">4.7</span> Practical Pitfalls and Reviewer-Proof Reporting</h2>
+<p>Having covered the three main cases, I now summarize common pitfalls that can undermine comparisons even when the correct method is used.</p>
+<p><strong>Low power of interaction tests.</strong> Interaction tests are often underpowered. Even when subgroup p-values look very different (e.g., <span class="math inline">\(p = .01\)</span> vs <span class="math inline">\(p = .20\)</span>), the interaction itself may not be significant because detecting a difference requires more statistical power than detecting a main effect. This is not a flaw of the method; it reflects the genuine uncertainty about whether the effects truly differ. Do not interpret a non-significant interaction as evidence that the effects are the same.</p>
+<p><strong>Multiple subgroup comparisons without correction.</strong> If I compare effects across five regions, ten time periods, or many subgroups, the probability of finding at least one “significant” difference by chance increases rapidly. Adjust for multiple comparisons using methods like Bonferroni, Holm, or Benjamini-Hochberg, or use a joint test (e.g., an F-test of all interaction terms simultaneously).</p>
+<p><strong>Post-hoc subgrouping.</strong> If subgroups are defined after inspecting the data (e.g., “the effect is strongest in countries with GDP above the median”), the resulting p-values are invalid. Pre-register subgroup comparisons or treat them as exploratory.</p>
+<p><strong>Nonlinear models.</strong> In logistic regression, Poisson regression, and other nonlinear models, comparing coefficients across groups is more complex because the coefficients are not on a natural scale. Compare substantive quantities instead: marginal effects, predicted probabilities, or risk ratios. In logit models specifically, coefficient differences can arise from differences in residual variance rather than true effect heterogeneity (Allison, 1999).</p>
+</section>
+<section id="reporting-template" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="reporting-template"><span class="header-section-number">4.8</span> Reporting Template</h2>
+<p>When reporting a comparison of estimates, I recommend including the following elements:</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Template for Methods / Results Sections
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Methods:</strong> “We tested whether the effect of [predictor] on [outcome] differed across [groups / periods / contexts] by estimating a pooled model with an interaction term between [predictor] and [group indicator]. [If panel data: We included unit fixed effects and clustered standard errors at the unit level.]”</p>
+<p><strong>Results:</strong> “The estimated effect was <span class="math inline">\(\hat\theta_1 = ...\)</span> [95% CI: …] in [Group 1] and <span class="math inline">\(\hat\theta_2 = ...\)</span> [95% CI: …] in [Group 2]. The estimated difference was <span class="math inline">\(\hat\Delta = ...\)</span> [95% CI: …, <span class="math inline">\(p = ...\)</span>], indicating [no statistically significant difference / a significant difference] in the effect across groups.”</p>
+<p>Always report:</p>
+<ul>
+<li><span class="math inline">\(\hat\theta_1\)</span>, <span class="math inline">\(\hat\theta_2\)</span> (the group-specific estimates)</li>
+<li><span class="math inline">\(\hat\Delta\)</span>, <span class="math inline">\(SE(\hat\Delta)\)</span>, 95% CI, p-value (the comparison)</li>
+<li>Model specification and dependence handling (clustering, pooled interaction, covariance estimation)</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="appendix-a-minimal-r-workflow" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="appendix-a-minimal-r-workflow"><span class="header-section-number">4.9</span> Appendix A — Minimal R Workflow</h2>
+<p>This appendix collects compact code recipes for each comparison scenario.</p>
+<section id="independent-estimate-z-test" class="level3" data-number="4.9.1">
+<h3 data-number="4.9.1" class="anchored" data-anchor-id="independent-estimate-z-test"><span class="header-section-number">4.9.1</span> Independent-Estimate z-Test</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Given two independent estimates and their SEs</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>beta_1 <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_1)[<span class="st">"x"</span>]</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>beta_2 <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_2)[<span class="st">"x"</span>]</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>se_1 <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_1)<span class="sc">$</span>coefficients[<span class="st">"x"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>se_2 <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_2)<span class="sc">$</span>coefficients[<span class="st">"x"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">&lt;-</span> beta_1 <span class="sc">-</span> beta_2</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>se_delta <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(se_1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> se_2<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> delta <span class="sc">/</span> se_delta</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fu">abs</span>(z))</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> delta <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>) <span class="sc">*</span> se_delta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pooled-interaction-model" class="level3" data-number="4.9.2">
+<h3 data-number="4.9.2" class="anchored" data-anchor-id="pooled-interaction-model"><span class="header-section-number">4.9.2</span> Pooled Interaction Model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack data from two groups</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>data_pooled <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transform</span>(data_1, <span class="at">group =</span> <span class="dv">0</span>),</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transform</span>(data_2, <span class="at">group =</span> <span class="dv">1</span>)</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">*</span> group, <span class="at">data =</span> data_pooled)</span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)  <span class="co"># coefficient on x:group is delta</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="panel-interaction-with-clustered-se" class="level3" data-number="4.9.3">
+<h3 data-number="4.9.3" class="anchored" data-anchor-id="panel-interaction-with-clustered-se"><span class="header-section-number">4.9.3</span> Panel Interaction with Clustered SE</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>model_panel <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">*</span> post <span class="sc">+</span> <span class="fu">factor</span>(unit) <span class="sc">+</span> <span class="fu">factor</span>(time), <span class="at">data =</span> panel)</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(model_panel, <span class="at">vcov =</span> <span class="fu">vcovCL</span>(model_panel, <span class="at">cluster =</span> panel<span class="sc">$</span>unit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="bootstrap-alternative-for-complex-dependence" class="level3" data-number="4.9.4">
+<h3 data-number="4.9.4" class="anchored" data-anchor-id="bootstrap-alternative-for-complex-dependence"><span class="header-section-number">4.9.4</span> Bootstrap Alternative for Complex Dependence</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>boot_delta <span class="ot">&lt;-</span> <span class="cf">function</span>(data, indices) {</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> data[indices, ]</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">*</span> group, <span class="at">data =</span> d)</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coef</span>(m)[<span class="st">"x:group"</span>]</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Use cluster-aware resampling if needed</span></span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>boot_out <span class="ot">&lt;-</span> <span class="fu">boot</span>(data_pooled, boot_delta, <span class="at">R =</span> <span class="dv">2000</span>)</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="fu">boot.ci</span>(boot_out, <span class="at">type =</span> <span class="st">"perc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="appendix-b-which-method-when-cheat-sheet" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="appendix-b-which-method-when-cheat-sheet"><span class="header-section-number">4.10</span> Appendix B — “Which Method When?” Cheat Sheet</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Quick reference: choosing a method for comparing estimates</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 42%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: left;">Recommended Method</th>
+<th style="text-align: left;">Key Assumption</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Independent samples, large N</td>
+<td style="text-align: left;">z-test with summed variances (Eq. 2)</td>
+<td style="text-align: left;">Independence of samples</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Independent samples, pooled model available</td>
+<td style="text-align: left;">Pooled regression + interaction term</td>
+<td style="text-align: left;">Common error variance or heteroskedasticity-robust SEs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Same units, time split (panel)</td>
+<td style="text-align: left;">Pooled panel model + period interaction, cluster SEs</td>
+<td style="text-align: left;">Correct FE/RE specification, adequate clustering</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Same units, geographic or group split</td>
+<td style="text-align: left;">Pooled model + group interaction, unit FE</td>
+<td style="text-align: left;">Correct grouping, sufficient within-group variation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Overlapping / nested samples</td>
+<td style="text-align: left;">Covariance-aware test (Eq. 3) or stacked/simultaneous model</td>
+<td style="text-align: left;">Correct covariance estimation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nonlinear model (logit, Poisson)</td>
+<td style="text-align: left;">Compare marginal effects or predicted probabilities, not raw coefficients</td>
+<td style="text-align: left;">Correct specification of both models</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Many subgroup comparisons</td>
+<td style="text-align: left;">Joint F-test + multiple-comparison correction</td>
+<td style="text-align: left;">Pre-specified subgroups; correction method chosen ex ante</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/Interaction_Polynomials.html" class="pagination-link" aria-label="Context Matters: A Guide to Interaction Terms">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
