@@ -611,9 +611,9 @@ Polynomials vs Splines
 <table class="caption-top table table-sm table-striped small">
 <caption>Quick reference: choosing an interaction or nonlinearity specification</caption>
 <colgroup>
-<col style="width: 28%">
-<col style="width: 38%">
-<col style="width: 33%">
+<col style="width: 27%">
+<col style="width: 39%">
+<col style="width: 32%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -624,19 +624,19 @@ Polynomials vs Splines
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Effect of X depends on another variable Z</td>
-<td style="text-align: left;">Include X, Z, and X × Z; interpret marginal effect of X across Z</td>
-<td style="text-align: left;">Linear interaction (constant rate of change in marginal effect)</td>
-</tr>
-<tr class="even">
 <td style="text-align: left;">Continuous × continuous interaction</td>
 <td style="text-align: left;">Center both variables; plot marginal effects with CIs across moderator range</td>
 <td style="text-align: left;">Sufficient variation in both X and Z; meaningful zero or centered values</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Continuous × categorical interaction</td>
-<td style="text-align: left;">Interaction = group-specific slopes; plot predicted values by group</td>
+<td style="text-align: left;">Interaction = group-specific slopes; plot predicted values or marginal effects by group</td>
 <td style="text-align: left;">Common error variance across groups or robust SEs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Categorical × categorical interaction</td>
+<td style="text-align: left;">Interaction = cell-specific means; compare group contrasts via post-hoc tests or marginal means</td>
+<td style="text-align: left;">Sufficient cell sizes; multiple-comparison correction if many groups</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Nonlinear relationship (moderate curvature)</td>
