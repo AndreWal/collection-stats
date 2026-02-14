@@ -207,6 +207,9 @@ window.Quarto = {
   <li><a href="#interaction-terms-as-context" id="toc-interaction-terms-as-context" class="nav-link active" data-scroll-target="#interaction-terms-as-context"><span class="header-section-number">3.1</span> Interaction Terms as Context</a></li>
   <li><a href="#what-is-an-interaction-term" id="toc-what-is-an-interaction-term" class="nav-link" data-scroll-target="#what-is-an-interaction-term"><span class="header-section-number">3.2</span> What is an Interaction Term?</a></li>
   <li><a href="#a-brief-digression-polynomial-regression" id="toc-a-brief-digression-polynomial-regression" class="nav-link" data-scroll-target="#a-brief-digression-polynomial-regression"><span class="header-section-number">3.3</span> A Brief Digression: Polynomial Regression</a></li>
+  <li><a href="#practical-pitfalls" id="toc-practical-pitfalls" class="nav-link" data-scroll-target="#practical-pitfalls"><span class="header-section-number">3.4</span> Practical Pitfalls</a></li>
+  <li><a href="#appendix-which-specification-when-cheat-sheet" id="toc-appendix-which-specification-when-cheat-sheet" class="nav-link" data-scroll-target="#appendix-which-specification-when-cheat-sheet"><span class="header-section-number">3.5</span> Appendix: “Which Specification When?” Cheat Sheet</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">3.6</span> Further Reading</a></li>
   </ul>
 </nav>
     </div>
@@ -216,6 +219,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></h1>
+<p class="subtitle lead">From marginal effects to meaningful moderator interpretation</p>
 </div>
 
 
@@ -239,12 +243,12 @@ window.Quarto = {
 <p>“If You Are Not a Liberal at 25, You Have No Heart. If You Are Not a Conservative at 35 You Have No Brain”</p>
 <p>— <a href="https://quoteinvestigator.com/2014/02/24/heart-head/">Quote Investigator</a></p>
 </blockquote>
-<p>Researchers often want to know whether relationships differ across contexts. We use ideological self-placement as the running example. More specifically, I want to know whether age affects left-right self-placement. In addition, I assume that income affects ideological leanings as well, meaning that voters at the lower end of the income distribution are typically more left than voters on the higher end of the income distribution. So, how can interaction terms help us understand the relationship between age, income and ideological placement? Does the relationship between age and ideological placement differ across income levels? If so, how can we model this relationship?</p>
+<p>Researchers often want to know whether relationships differ across contexts. I use ideological self-placement as the running example. More specifically, I want to know whether age affects left-right self-placement. In addition, I assume that income affects ideological leanings as well, meaning that voters at the lower end of the income distribution are typically more left than voters on the higher end of the income distribution. So, how can interaction terms help us understand the relationship between age, income and ideological placement? Does the relationship between age and ideological placement differ across income levels? If so, how can I model this relationship?</p>
 </section>
 <section id="what-is-an-interaction-term" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="what-is-an-interaction-term"><span class="header-section-number">3.2</span> What is an Interaction Term?</h2>
-<p>In this example, <code>income</code> is measured in tens of thousands, and <code>leftRight</code> is a 0-10 self-placement scale where higher values indicate more right-leaning views.</p>
-<p>We established in the previous chapter that a coefficient in a regression model represents the average effect of a predictor variable on the response variable, holding all other variables constant. However, this assumes that the effect of the predictor is the same across all contexts. Using a linear regression model with a continuous response variable <code>leftRight</code> and a predictor variable <code>age</code>, we can illustrate this point. Mathematically, our model without an interaction term looks as follows:</p>
+<p>In this example, <code>income</code> is measured in tens of thousands, and <code>leftRight</code> is a 0-10 self-placement scale where higher values indicate more right-leaning views. The simulated data are generated with the following true parameters: the baseline effect of age on ideology is <span class="math inline">\(\beta_1 = 0.02\)</span>, the main effect of income is <span class="math inline">\(\beta_2 = 0.15\)</span>, and the interaction is <span class="math inline">\(\beta_3 = 0.004\)</span>. This means the true marginal effect of age on left-right placement is <span class="math inline">\(0.02 + 0.004 \times income\)</span>, so the age effect increases by 0.004 for each additional unit of income.</p>
+<p>I established in the previous chapter that a coefficient in a regression model represents the average effect of a predictor variable on the response variable, holding all other variables constant. However, this assumes that the effect of the predictor is the same across all contexts. Using a linear regression model with a continuous response variable <code>leftRight</code> and a predictor variable <code>age</code>, I can illustrate this point. Mathematically, our model without an interaction term looks as follows:</p>
 <p><span id="eq-reg"><span class="math display">\[
 leftRight_i = \alpha + \beta_1 age_i + \epsilon_i
 \tag{3.1}\]</span></span></p>
@@ -277,10 +281,10 @@ Multiple R-squared:  0.2816,    Adjusted R-squared:  0.2809
 F-statistic: 391.3 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>So, why is this important to understand interaction terms? An interaction term is essentially a multiplicative combination of two predictor variables. When we include an interaction term in our regression model, we simply add two predictors and their product to the equation. Let’s assume that we want to know whether the effect of <code>age</code> on <code>leftRight</code> depends on the income of a respondent. Our regression model with the interaction term would look like this: <span id="eq-reg-interaction"><span class="math display">\[
+<p>So, why is this important to understand interaction terms? An interaction term is essentially a multiplicative combination of two predictor variables. When I include an interaction term in the regression model, I simply add two predictors and their product to the equation. Let’s assume that I want to know whether the effect of <code>age</code> on <code>leftRight</code> depends on the income of a respondent. Our regression model with the interaction term would look like this: <span id="eq-reg-interaction"><span class="math display">\[
 leftRight_i = \alpha + \beta_1 age_i + \beta_2 income_i + \beta_3 (age_i \times income_i) + \epsilon_i
 \tag{3.3}\]</span></span></p>
-<p>If we take the partial derivative of <a href="#eq-reg-interaction" class="quarto-xref">Equation&nbsp;<span>3.3</span></a> with respect to <code>age</code>, we get: <span id="eq-derivative-interaction"><span class="math display">\[
+<p>If I take the partial derivative of <a href="#eq-reg-interaction" class="quarto-xref">Equation&nbsp;<span>3.3</span></a> with respect to <code>age</code>, I get: <span id="eq-derivative-interaction"><span class="math display">\[
 \frac{\partial leftRight_i}{\partial age_i} = \beta_1 + \beta_3 income_i
 \tag{3.4}\]</span></span></p>
 <p>As <a href="#eq-derivative-interaction" class="quarto-xref">Equation&nbsp;<span>3.4</span></a> shows, the effect of <code>age</code> on <code>leftRight</code> is no longer constant but depends on the value of <code>income</code>. The coefficient <span class="math inline">\(\beta_3\)</span> represents the change in the effect of <code>age</code> for each one-unit increase in <code>income</code>. If <span class="math inline">\(\beta_3\)</span> is positive, it means that the effect of <code>age</code> on <code>leftRight</code> increases as income increases. Conversely, if <span class="math inline">\(\beta_3\)</span> is negative, it means that the effect of <code>age</code> on <code>leftRight</code> decreases as income increases.</p>
@@ -313,7 +317,33 @@ F-statistic: 851.9 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>(R adds the constitutive terms automatically when you use the <code>*</code> operator between two variables in the formula.)</p>
-<p>Even though it is more informative to plot the interaction to understand how the effect of <code>age</code> changes across different income levels, we can also look at the coefficients to get a sense of the interaction. First, we can see that the coefficient for <code>age</code> is positive. However, the coefficient for <code>age</code> gives us only the effect of <code>age</code> when <code>income</code> is zero, which is not a meaningful value in this context. A solution here would be to center the <code>income</code> variable around its mean before including it in the regression model. This way, the coefficient for <code>age</code> would represent the effect of <code>age</code> at the average income level.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The Interaction Coefficient Is Not the Full Story
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The coefficient on the interaction term (<span class="math inline">\(\hat\beta_3\)</span>) tells you the <em>rate of change</em> of the marginal effect, not the marginal effect itself. The marginal effect of <code>age</code> at any given income level is <span class="math inline">\(\hat\beta_1 + \hat\beta_3 \times income\)</span>. Always compute and visualize the full marginal effect across the moderator’s range rather than interpreting <span class="math inline">\(\hat\beta_3\)</span> in isolation.</p>
+</div>
+</div>
+<p>Even though it is more informative to plot the interaction to understand how the effect of <code>age</code> changes across different income levels, I can also look at the coefficients to get a sense of the interaction. First, I can see that the coefficient for <code>age</code> is positive. However, the coefficient for <code>age</code> gives us only the effect of <code>age</code> when <code>income</code> is zero, which is not a meaningful value in this context. A solution here would be to center the <code>income</code> variable around its mean before including it in the regression model. This way, the coefficient for <code>age</code> would represent the effect of <code>age</code> at the average income level.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On Centering Predictors
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Centering continuous predictors before including them in interaction models serves two purposes: (1) it makes the constitutive terms (<span class="math inline">\(\hat\beta_1\)</span>, <span class="math inline">\(\hat\beta_2\)</span>) directly interpretable at the mean of the other variable rather than at zero, and (2) it can reduce multicollinearity between the interaction term and its constitutive terms, improving numerical stability. Centering does not change the interaction coefficient, the marginal effects, or the model fit but only the interpretation of the lower-order coefficients.</p>
+</div>
+</div>
 <p>Second, the coefficient for the interaction term <code>age:income</code> is positive, which indicates that the effect of <code>age</code> on <code>leftRight</code> increases as income increases. This means that age is more strongly associated with rightward placement among higher-income respondents than among lower-income respondents. Therefore, the table alone already gives us a pretty good idea of the interaction, but it is often more intuitive to visualize it:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model with interaction</span></span>
@@ -355,17 +385,22 @@ F-statistic: 851.9 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-plot the line on top</span></span>
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(income_seq, effect, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Interaction_Polynomials_files/figure-html/plot-interaction-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-marginal-effect-income" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-marginal-effect-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Interaction_Polynomials_files/figure-html/fig-marginal-effect-income-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-marginal-effect-income-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.1: Marginal effect of age on left-right placement across income levels. The effect is positive throughout the observed income range but increases with income.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>To plot the marginal effect of <code>age</code> on <code>leftRight</code> across different income levels, along with 95% confidence intervals, we use the coefficients and variance-covariance matrix from the fitted model. To compute variance for the confidence intervals, we apply the delta method:</p>
+<p>To plot the marginal effect of <code>age</code> on <code>leftRight</code> across different income levels, along with 95% confidence intervals, I use the coefficients and variance-covariance matrix from the fitted model. To compute variance for the confidence intervals, I apply the delta method:</p>
 <p><span class="math display">\[Var(\beta_1 + \beta_3 \cdot income) = Var(\beta_1) + income^2 \cdot Var(\beta_3) + 2 \cdot income \cdot Cov(\beta_1, \beta_3)\]</span></p>
 <p>The plot shows that the estimated effect of <code>age</code> is positive across the observed income range. This visualization gives us a much clearer picture of how the effect of <code>age</code> changes across income levels compared to a regression table. While <code>age</code> increases rightward placement for all income levels, the effect is much stronger for higher-income respondents than for lower-income respondents.</p>
-<p>An alternative way to visualize the interaction is to plot predicted values of <code>leftRight</code> across <code>age</code> for different income levels. To do so, we use the 10%, 50%, and 90% quantiles of the <code>income</code> variable to represent low, medium, and high income levels, respectively. We then plot the predicted <code>leftRight</code> values across <code>age</code> for these three income levels, along with confidence intervals.</p>
+<p>An alternative way to visualize the interaction is to plot predicted values of <code>leftRight</code> across <code>age</code> for different income levels. To do so, I use the 10%, 50%, and 90% quantiles of the <code>income</code> variable to represent low, medium, and high income levels, respectively. I then plot the predicted <code>leftRight</code> values across <code>age</code> for these three income levels, along with confidence intervals.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>income_levels <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">quantile</span>(data<span class="sc">$</span>income, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>)))</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>income_labels <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">c</span>(<span class="st">"P10 = "</span>, <span class="st">"P50 = "</span>, <span class="st">"P90 = "</span>), <span class="fu">sprintf</span>(<span class="st">"%.1f"</span>, income_levels))</span>
@@ -420,9 +455,14 @@ F-statistic: 851.9 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"blue"</span>, <span class="st">"red"</span>),</span>
 <span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Interaction_Polynomials_files/figure-html/plot-predicted-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-predicted-values" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-predicted-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Interaction_Polynomials_files/figure-html/fig-predicted-values-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-predicted-values-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.2: Predicted left-right placement by age at the 10th, 50th, and 90th percentiles of income. The steeper slope for higher income illustrates the positive interaction.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -431,7 +471,7 @@ F-statistic: 851.9 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 </section>
 <section id="a-brief-digression-polynomial-regression" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="a-brief-digression-polynomial-regression"><span class="header-section-number">3.3</span> A Brief Digression: Polynomial Regression</h2>
-<p>We now extend the interaction idea to nonlinearity. In an interaction, the slope of one variable changes with another variable (x × z). With polynomial terms, the slope of a variable changes with its own level by including powers like x² and x³. Although both are multiplicative in form, polynomial terms are conventionally treated as predictor transformations (basis expansions), not as interaction terms. Using <code>age</code> as an example, our regression model with a cubic term would look like this: <span id="eq-reg-polynomial"><span class="math display">\[
+<p>I now extend the interaction idea to nonlinearity. In an interaction, the slope of one variable changes with another variable (x × z). With polynomial terms, the slope of a variable changes with its own level by including powers like x² and x³. Although both are multiplicative in form, polynomial terms are conventionally treated as predictor transformations (basis expansions), not as interaction terms. Using <code>age</code> as an example, our regression model with a cubic term would look like this: <span id="eq-reg-polynomial"><span class="math display">\[
 leftRight_i = \alpha + \beta_1 age_i + \beta_2 age_i^2 + \beta_3 age_i^3 + \epsilon_i
 \tag{3.5}\]</span></span></p>
 <p>The partial derivative of <a href="#eq-reg-polynomial" class="quarto-xref">Equation&nbsp;<span>3.5</span></a> with respect to <code>age</code> is: <span id="eq-derivative-polynomial"><span class="math display">\[
@@ -515,15 +555,116 @@ F-statistic:    52 on 3 and 996 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-plot the line on top</span></span>
 <span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(age_seq, effect, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Interaction_Polynomials_files/figure-html/plot-polynomial-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-marginal-effect-polynomial" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-marginal-effect-polynomial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Interaction_Polynomials_files/figure-html/fig-marginal-effect-polynomial-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-marginal-effect-polynomial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.3: Marginal effect of age on left-right placement from a cubic polynomial model. The U-shaped pattern shows a declining effect for younger respondents, a null zone in middle age, and a rising effect for older respondents.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>The plot shows that the marginal effect of <code>age</code> on <code>leftRight</code> is positive but decreasing for younger respondents, becomes not statistically distinguishable from zero for respondents between mid-40s and mid-50s, and becomes positive and significant again for older respondents. This U-shaped pattern illustrates how polynomial regression can capture non-linear relationships between a predictor variable and a response variable. In this example, the relationship between <code>age</code> and <code>leftRight</code> follows a nonlinear pattern with changing slope that can be captured by including polynomial terms in the regression model.</p>
 <p>Of course, other functional forms could be considered to capture different types of non-linear relationships. But the main point is that this example illustrates how polynomial regression can capture non-linear relationships between a predictor variable and a response variable.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Polynomials vs Splines
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Polynomial terms are easy to specify and interpret via partial derivatives, but high-order polynomials (degree &gt; 3) tend to produce wild extrapolation and overfitting at the boundaries of the data. For more flexible nonlinear relationships, consider restricted cubic splines (e.g., <code>rcs()</code> in the <code>rms</code> package) or generalized additive models (e.g., <code>gam()</code> in <code>mgcv</code>). These methods fit smooth curves without the boundary instability of high-order polynomials.</p>
+</div>
+</div>
+<p>As an alternative to computing marginal effects and confidence intervals manually via the delta method, the <code>marginaleffects</code> package provides a convenient interface:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(marginaleffects)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># For the interaction model: marginal effect of age across income values</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(leftRight <span class="sc">~</span> age <span class="sc">*</span> income, <span class="at">data =</span> data)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">avg_slopes</span>(model, <span class="at">variables =</span> <span class="st">"age"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">income =</span> <span class="fu">seq</span>(<span class="dv">2</span>, <span class="dv">12</span>, <span class="at">by =</span> <span class="dv">2</span>)))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># For the polynomial model: marginal effect of age across age values</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>model_poly <span class="ot">&lt;-</span> <span class="fu">lm</span>(leftRight <span class="sc">~</span> age <span class="sc">+</span> <span class="fu">I</span>(age<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(age<span class="sc">^</span><span class="dv">3</span>), <span class="at">data =</span> data2)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_slopes</span>(model_poly, <span class="at">variables =</span> <span class="st">"age"</span>, <span class="at">condition =</span> <span class="st">"age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="practical-pitfalls" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="practical-pitfalls"><span class="header-section-number">3.4</span> Practical Pitfalls</h2>
+<p><strong>Interpreting constitutive terms as unconditional effects.</strong> In a model with an interaction <span class="math inline">\(X \times Z\)</span>, the coefficient on <span class="math inline">\(X\)</span> is conditional on <span class="math inline">\(Z = 0\)</span>. If zero is not a meaningful or observed value of <span class="math inline">\(Z\)</span>, this coefficient has no useful interpretation without centering.</p>
+<p><strong>Multicollinearity from uncentered interactions.</strong> When predictors are not centered, the interaction term <span class="math inline">\(X \times Z\)</span> can be highly correlated with <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span>, inflating standard errors. Centering both variables before computing the interaction reduces this collinearity without affecting the substantive results.</p>
+<p><strong>Overfitting with high-order polynomials.</strong> Each additional polynomial degree adds flexibility but also a parameter. Cubic or quartic fits may capture noise rather than signal, especially with moderate sample sizes. Compare models via AIC/BIC or cross-validation, and prefer splines for high-flexibility needs.</p>
+<p><strong>Interaction power.</strong> As discussed in the chapter on comparing estimates, detecting an interaction typically requires substantially more statistical power than detecting a main effect of comparable magnitude. A non-significant interaction should not be interpreted as evidence of no moderation without a power analysis.</p>
+<p><strong>Extrapolation beyond observed data.</strong> Both interaction and polynomial models can produce misleading predictions outside the observed range of the predictors. Always check that the values used for plotting and interpretation fall within (or near) the range of the data.</p>
+</section>
+<section id="appendix-which-specification-when-cheat-sheet" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="appendix-which-specification-when-cheat-sheet"><span class="header-section-number">3.5</span> Appendix: “Which Specification When?” Cheat Sheet</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Quick reference: choosing an interaction or nonlinearity specification</caption>
+<colgroup>
+<col style="width: 28%">
+<col style="width: 38%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: left;">Recommended Approach</th>
+<th style="text-align: left;">Key Assumption</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Effect of X depends on another variable Z</td>
+<td style="text-align: left;">Include X, Z, and X × Z; interpret marginal effect of X across Z</td>
+<td style="text-align: left;">Linear interaction (constant rate of change in marginal effect)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Continuous × continuous interaction</td>
+<td style="text-align: left;">Center both variables; plot marginal effects with CIs across moderator range</td>
+<td style="text-align: left;">Sufficient variation in both X and Z; meaningful zero or centered values</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Continuous × categorical interaction</td>
+<td style="text-align: left;">Interaction = group-specific slopes; plot predicted values by group</td>
+<td style="text-align: left;">Common error variance across groups or robust SEs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nonlinear relationship (moderate curvature)</td>
+<td style="text-align: left;">Quadratic or cubic polynomial; plot marginal effect via partial derivative</td>
+<td style="text-align: left;">True relationship is well-approximated by a low-order polynomial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nonlinear relationship (complex/unknown shape)</td>
+<td style="text-align: left;">Restricted cubic splines (rcs) or GAM; plot smooth marginal effect</td>
+<td style="text-align: left;">Smoothness; sufficient data density across predictor range</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Effect differs across groups (separate regressions vs interaction)</td>
+<td style="text-align: left;">Pooled model with interaction preferred over split-sample (see Comparing Estimates chapter)</td>
+<td style="text-align: left;">Same functional form in both groups; adequate sample size for interaction power</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="further-reading" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">3.6</span> Further Reading</h2>
+<ol type="1">
+<li><p><strong>Brambor, T., Clark, W. R. &amp; Golder, M. (2006).</strong> “Understanding Interaction Models: Improving Empirical Analyses.” <em>Political Analysis</em>, 14(1), 63–82.</p></li>
+<li><p><strong>Berry, W. D., Golder, M. &amp; Milton, D. (2012).</strong> “Improving Tests of Theories Positing Interaction.” <em>Journal of Politics</em>, 74(3), 653–671.</p></li>
+<li><p><strong>Hainmueller, J., Mummolo, J. &amp; Xu, Y. (2019).</strong> “How Much Should We Trust Estimates from Multiplicative Interaction Models? Simple Tools to Improve Empirical Practice.” <em>Political Analysis</em>, 27(2), 163–192.</p></li>
+</ol>
 
 
 </section>
