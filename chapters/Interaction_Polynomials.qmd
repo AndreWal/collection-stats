@@ -1,5 +1,6 @@
 ---
 title: "Context Matters: A Guide to Interaction Terms"
+subtitle: "From marginal effects to meaningful moderator interpretation"
 ---
 
 *Disclaimer: All data used in this chapter is simulated and does not reflect real-world data. The purpose of this chapter is to illustrate the concept of interaction terms in linear regression models, not to make any claims about the relationship between age, income, and ideological placement.*
@@ -10,7 +11,7 @@ title: "Context Matters: A Guide to Interaction Terms"
 >
 > — [Quote Investigator](https://quoteinvestigator.com/2014/02/24/heart-head/)
 
-Researchers often want to know whether relationships differ across contexts. We use ideological self-placement as the running example. More specifically, I want to know whether age affects left-right self-placement. In addition, I assume that income affects ideological leanings as well, meaning that voters at the lower end of the income distribution are typically more left than voters on the higher end of the income distribution. So, how can interaction terms help us understand the relationship between age, income and ideological placement? Does the relationship between age and ideological placement differ across income levels? If so, how can we model this relationship?
+Researchers often want to know whether relationships differ across contexts. I use ideological self-placement as the running example. More specifically, I want to know whether age affects left-right self-placement. In addition, I assume that income affects ideological leanings as well, meaning that voters at the lower end of the income distribution are typically more left than voters on the higher end of the income distribution. So, how can interaction terms help us understand the relationship between age, income and ideological placement? Does the relationship between age and ideological placement differ across income levels? If so, how can I model this relationship?
 
 ## What is an Interaction Term?
 
@@ -42,9 +43,9 @@ data <- data.frame(
 )
 ```
 
-In this example, `income` is measured in tens of thousands, and `leftRight` is a 0-10 self-placement scale where higher values indicate more right-leaning views.
+In this example, `income` is measured in tens of thousands, and `leftRight` is a 0-10 self-placement scale where higher values indicate more right-leaning views. The simulated data are generated with the following true parameters: the baseline effect of age on ideology is $\beta_1 = 0.02$, the main effect of income is $\beta_2 = 0.15$, and the interaction is $\beta_3 = 0.004$. This means the true marginal effect of age on left-right placement is $0.02 + 0.004 \times income$, so the age effect increases by 0.004 for each additional unit of income.
 
-We established in the previous chapter that a coefficient in a regression model represents the average effect of a predictor variable on the response variable, holding all other variables constant. However, this assumes that the effect of the predictor is the same across all contexts. Using a linear regression model with a continuous response variable `leftRight` and a predictor variable `age`, we can illustrate this point. Mathematically, our model without an interaction term looks as follows:
+I established in the previous chapter that a coefficient in a regression model represents the average effect of a predictor variable on the response variable, holding all other variables constant. However, this assumes that the effect of the predictor is the same across all contexts. Using a linear regression model with a continuous response variable `leftRight` and a predictor variable `age`, I can illustrate this point. Mathematically, our model without an interaction term looks as follows:
 
 $$
 leftRight_i = \alpha + \beta_1 age_i + \epsilon_i
@@ -58,17 +59,18 @@ $$ {#eq-derivative}
 In R, this model can be estimated using the `lm()` function as follows:
 
 ```{r}
+#| label: fit-simple
 summary(
   lm(leftRight ~ age, data = data)
 )
 ```
 
-So, why is this important to understand interaction terms? An interaction term is essentially a multiplicative combination of two predictor variables. When we include an interaction term in our regression model, we simply add two predictors and their product to the equation. Let's assume that we want to know whether the effect of `age` on `leftRight` depends on the income of a respondent. Our regression model with the interaction term would look like this: 
+So, why is this important to understand interaction terms? An interaction term is essentially a multiplicative combination of two predictor variables. When I include an interaction term in the regression model, I simply add two predictors and their product to the equation. Let's assume that I want to know whether the effect of `age` on `leftRight` depends on the income of a respondent. Our regression model with the interaction term would look like this: 
 $$
 leftRight_i = \alpha + \beta_1 age_i + \beta_2 income_i + \beta_3 (age_i \times income_i) + \epsilon_i
 $$ {#eq-reg-interaction}
 
-If we take the partial derivative of @eq-reg-interaction with respect to `age`, we get:
+If I take the partial derivative of @eq-reg-interaction with respect to `age`, I get:
 $$
 \frac{\partial leftRight_i}{\partial age_i} = \beta_1 + \beta_3 income_i
 $$ {#eq-derivative-interaction} 
@@ -76,20 +78,34 @@ $$ {#eq-derivative-interaction}
 As @eq-derivative-interaction shows, the effect of `age` on `leftRight` is no longer constant but depends on the value of `income`. The coefficient $\beta_3$ represents the change in the effect of `age` for each one-unit increase in `income`. If $\beta_3$ is positive, it means that the effect of `age` on `leftRight` increases as income increases. Conversely, if $\beta_3$ is negative, it means that the effect of `age` on `leftRight` decreases as income increases.
 
 In R, this would look like this:
-```{r}  
+```{r}
+#| label: fit-interaction
 summary(
   lm(leftRight ~ age * income, data = data)
 )
 ```
 (R adds the constitutive terms automatically when you use the `*` operator between two variables in the formula.)
 
-Even though it is more informative to plot the interaction to understand how the effect of `age` changes across different income levels, we can also look at the coefficients to get a sense of the interaction. 
-First, we can see that the coefficient for `age` is positive. However, the coefficient for `age` gives us only the effect of `age` when `income` is zero, which is not a meaningful value in this context. A solution here would be to center the `income` variable around its mean before including it in the regression model. This way, the coefficient for `age` would represent the effect of `age` at the average income level. 
+::: {.callout-important}
+## The Interaction Coefficient Is Not the Full Story
+
+The coefficient on the interaction term ($\hat\beta_3$) tells you the *rate of change* of the marginal effect, not the marginal effect itself. The marginal effect of `age` at any given income level is $\hat\beta_1 + \hat\beta_3 \times income$. Always compute and visualize the full marginal effect across the moderator's range rather than interpreting $\hat\beta_3$ in isolation.
+:::
+
+Even though it is more informative to plot the interaction to understand how the effect of `age` changes across different income levels, I can also look at the coefficients to get a sense of the interaction. 
+First, I can see that the coefficient for `age` is positive. However, the coefficient for `age` gives us only the effect of `age` when `income` is zero, which is not a meaningful value in this context. A solution here would be to center the `income` variable around its mean before including it in the regression model. This way, the coefficient for `age` would represent the effect of `age` at the average income level.
+
+::: {.callout-note}
+## On Centering Predictors
+
+Centering continuous predictors before including them in interaction models serves two purposes: (1) it makes the constitutive terms ($\hat\beta_1$, $\hat\beta_2$) directly interpretable at the mean of the other variable rather than at zero, and (2) it can reduce multicollinearity between the interaction term and its constitutive terms, improving numerical stability. Centering does not change the interaction coefficient, the marginal effects, or the model fit but only the interpretation of the lower-order coefficients.
+::: 
 
 Second, the coefficient for the interaction term `age:income` is positive, which indicates that the effect of `age` on `leftRight` increases as income increases. This means that age is more strongly associated with rightward placement among higher-income respondents than among lower-income respondents. Therefore, the table alone already gives us a pretty good idea of the interaction, but it is often more intuitive to visualize it: 
 
 ```{r}
-#| label: plot-interaction
+#| label: fig-marginal-effect-income
+#| fig-cap: "Marginal effect of age on left-right placement across income levels. The effect is positive throughout the observed income range but increases with income."
 #| warning: false
 
 # Fit the model with interaction
@@ -132,16 +148,17 @@ abline(h = 0, lty = 2, col = "gray", lwd = 1)
 lines(income_seq, effect, lwd = 2, col = "blue")
 ```
 
-To plot the marginal effect of `age` on `leftRight` across different income levels, along with 95% confidence intervals, we use the coefficients and variance-covariance matrix from the fitted model. To compute variance for the confidence intervals, we apply the delta method:
+To plot the marginal effect of `age` on `leftRight` across different income levels, along with 95% confidence intervals, I use the coefficients and variance-covariance matrix from the fitted model. To compute variance for the confidence intervals, I apply the delta method:
 
 $$Var(\beta_1 + \beta_3 \cdot income) = Var(\beta_1) + income^2 \cdot Var(\beta_3) + 2 \cdot income \cdot Cov(\beta_1, \beta_3)$$
 
 The plot shows that the estimated effect of `age` is positive across the observed income range. This visualization gives us a much clearer picture of how the effect of `age` changes across income levels compared to a regression table. While `age` increases rightward placement for all income levels, the effect is much stronger for higher-income respondents than for lower-income respondents.
 
-An alternative way to visualize the interaction is to plot predicted values of `leftRight` across `age` for different income levels. To do so, we use the 10%, 50%, and 90% quantiles of the `income` variable to represent low, medium, and high income levels, respectively. We then plot the predicted `leftRight` values across `age` for these three income levels, along with confidence intervals.
+An alternative way to visualize the interaction is to plot predicted values of `leftRight` across `age` for different income levels. To do so, I use the 10%, 50%, and 90% quantiles of the `income` variable to represent low, medium, and high income levels, respectively. I then plot the predicted `leftRight` values across `age` for these three income levels, along with confidence intervals.
 
 ```{r}
-#| label: plot-predicted
+#| label: fig-predicted-values
+#| fig-cap: "Predicted left-right placement by age at the 10th, 50th, and 90th percentiles of income. The steeper slope for higher income illustrates the positive interaction."
 #| warning: false
 
 income_levels <- as.numeric(quantile(data$income, probs = c(0.1, 0.5, 0.9)))
@@ -226,7 +243,7 @@ data2 <- data.frame(
 )
 ```
 
-We now extend the interaction idea to nonlinearity. In an interaction, the slope of one variable changes with another variable (x × z). With polynomial terms, the slope of a variable changes with its own level by including powers like x² and x³. Although both are multiplicative in form, polynomial terms are conventionally treated as predictor transformations (basis expansions), not as interaction terms. Using `age` as an example, our regression model with a cubic term would look like this:
+I now extend the interaction idea to nonlinearity. In an interaction, the slope of one variable changes with another variable (x × z). With polynomial terms, the slope of a variable changes with its own level by including powers like x² and x³. Although both are multiplicative in form, polynomial terms are conventionally treated as predictor transformations (basis expansions), not as interaction terms. Using `age` as an example, our regression model with a cubic term would look like this:
 $$
 leftRight_i = \alpha + \beta_1 age_i + \beta_2 age_i^2 + \beta_3 age_i^3 + \epsilon_i
 $$ {#eq-reg-polynomial} 
@@ -238,6 +255,7 @@ $$ {#eq-derivative-polynomial}
 
 In R, a polynomial regression can be estimated by either using the `poly()` function (or including the polynomial terms manually) as follows:
 ```{r}
+#| label: fit-polynomial
 summary(
   lm(leftRight ~ poly(age, degree = 3, raw = TRUE), data = data2)
 )
@@ -245,7 +263,8 @@ summary(
 
 And the plot of the marginal effect of `age` on `leftRight` would look like this:
 ```{r}
-#| label: plot-polynomial
+#| label: fig-marginal-effect-polynomial
+#| fig-cap: "Marginal effect of age on left-right placement from a cubic polynomial model. The U-shaped pattern shows a declining effect for younger respondents, a null zone in middle age, and a rising effect for older respondents."
 #| warning: false
 
 # Fit the polynomial regression model with raw polynomials
@@ -300,3 +319,84 @@ lines(age_seq, effect, lwd = 2, col = "red")
 The plot shows that the marginal effect of `age` on `leftRight` is positive but decreasing for younger respondents, becomes not statistically distinguishable from zero for respondents between mid-40s and mid-50s, and becomes positive and significant again for older respondents. This U-shaped pattern illustrates how polynomial regression can capture non-linear relationships between a predictor variable and a response variable. In this example, the relationship between `age` and `leftRight` follows a nonlinear pattern with changing slope that can be captured by including polynomial terms in the regression model. 
 
 Of course, other functional forms could be considered to capture different types of non-linear relationships. But the main point is that this example illustrates how polynomial regression can capture non-linear relationships between a predictor variable and a response variable.
+
+::: {.callout-tip}
+## Polynomials vs Splines
+
+Polynomial terms are easy to specify and interpret via partial derivatives, but high-order polynomials (degree > 3) tend to produce wild extrapolation and overfitting at the boundaries of the data. For more flexible nonlinear relationships, consider restricted cubic splines (e.g., `rcs()` in the `rms` package) or generalized additive models (e.g., `gam()` in `mgcv`). These methods fit smooth curves without the boundary instability of high-order polynomials.
+:::
+
+As an alternative to computing marginal effects and confidence intervals manually via the delta method, the `marginaleffects` package provides a convenient interface:
+
+```{r}
+#| label: marginaleffects-example
+#| eval: false
+
+library(marginaleffects)
+
+# For the interaction model: marginal effect of age across income values
+model <- lm(leftRight ~ age * income, data = data)
+avg_slopes(model, variables = "age",
+           newdata = datagrid(income = seq(2, 12, by = 2)))
+
+# For the polynomial model: marginal effect of age across age values
+model_poly <- lm(leftRight ~ age + I(age^2) + I(age^3), data = data2)
+plot_slopes(model_poly, variables = "age", condition = "age")
+```
+
+## Practical Pitfalls
+
+**Interpreting constitutive terms as unconditional effects.** In a model with an interaction $X \times Z$, the coefficient on $X$ is conditional on $Z = 0$. If zero is not a meaningful or observed value of $Z$, this coefficient has no useful interpretation without centering.
+
+**Multicollinearity from uncentered interactions.** When predictors are not centered, the interaction term $X \times Z$ can be highly correlated with $X$ and $Z$, inflating standard errors. Centering both variables before computing the interaction reduces this collinearity without affecting the substantive results.
+
+**Overfitting with high-order polynomials.** Each additional polynomial degree adds flexibility but also a parameter. Cubic or quartic fits may capture noise rather than signal, especially with moderate sample sizes. Compare models via AIC/BIC or cross-validation, and prefer splines for high-flexibility needs.
+
+**Interaction power.** As discussed in the chapter on comparing estimates, detecting an interaction typically requires substantially more statistical power than detecting a main effect of comparable magnitude. A non-significant interaction should not be interpreted as evidence of no moderation without a power analysis.
+
+**Extrapolation beyond observed data.** Both interaction and polynomial models can produce misleading predictions outside the observed range of the predictors. Always check that the values used for plotting and interpretation fall within (or near) the range of the data (e.g. by adding rug plots for the moderator).
+
+## Appendix: "Which Specification When?" Cheat Sheet
+
+```{r}
+#| label: cheat-sheet
+#| echo: false
+
+cheat <- data.frame(
+  Scenario = c(
+    "Continuous × continuous interaction",
+    "Continuous × categorical interaction",
+    "Categorical × categorical interaction",
+    "Nonlinear relationship (moderate curvature)",
+    "Nonlinear relationship (complex/unknown shape)",
+    "Effect differs across groups (separate regressions vs interaction)"
+  ),
+  Method = c(
+    "Center both variables; plot marginal effects with CIs across moderator range",
+    "Interaction = group-specific slopes; plot predicted values or marginal effects by group",
+    "Interaction = cell-specific means; compare group contrasts via post-hoc tests or marginal means",
+    "Quadratic or cubic polynomial; plot marginal effect via partial derivative",
+    "Restricted cubic splines (rcs) or GAM; plot smooth marginal effect",
+    "Pooled model with interaction preferred over split-sample (see Comparing Estimates chapter)"
+  ),
+  Key_Assumption = c(
+    "Sufficient variation in both X and Z; meaningful zero or centered values",
+    "Common error variance across groups or robust SEs",
+    "Sufficient cell sizes; multiple-comparison correction if many groups",
+    "True relationship is well-approximated by a low-order polynomial",
+    "Smoothness; sufficient data density across predictor range",
+    "Same functional form in both groups; adequate sample size for interaction power"
+  )
+)
+
+knitr::kable(cheat, col.names = c("Scenario", "Recommended Approach", "Key Assumption"),
+             caption = "Quick reference: choosing an interaction or nonlinearity specification")
+```
+
+## Further Reading
+
+1. **Brambor, T., Clark, W. R. & Golder, M. (2006).** "Understanding Interaction Models: Improving Empirical Analyses." *Political Analysis*, 14(1), 63–82. 
+
+2. **Berry, W. D., Golder, M. & Milton, D. (2012).** "Improving Tests of Theories Positing Interaction." *Journal of Politics*, 74(3), 653–671. 
+
+3. **Hainmueller, J., Mummolo, J. & Xu, Y. (2019).** "How Much Should We Trust Estimates from Multiplicative Interaction Models? Simple Tools to Improve Empirical Practice." *Political Analysis*, 27(2), 163–192.

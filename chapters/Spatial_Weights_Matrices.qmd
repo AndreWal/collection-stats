@@ -1,0 +1,603 @@
+---
+title: "Building Spatial Weights Matrices Without Guesswork"
+subtitle: "How connectivity choices change substantive conclusions"
+---
+
+*All regression examples in this chapter use simulated data. Illustrative distances and trade figures are drawn from real-world approximations for concreteness, but no empirical claims depend on them. The goal is to show how matrix choices affect inference, not to make claims about real policy diffusion.*
+
+## Why This Chapter Exists
+
+Interdependence is a core feature of social phenomena. States share borders, trade with each other, join international organizations, wage war, and exchange migrants. To model these interdependencies, I need to specify a connectivity or spatial weights matrix `W` that encodes who influences whom and by how much.
+
+Despite its centrality, many researchers treat `W` as a technical preprocessing step, something to get through quickly before running the "real" model. This is a mistake. `W` is itself a core substantive assumption. It defines the structure of interdependence in the model. As @neumayer2016w put it, the spatial weights matrix embodies a theory about how influence flows between units, and getting that theory wrong will bias every estimate that depends on it.
+
+The consequences are not hypothetical. @whitten2021interpretation surveyed 94 published articles using spatial autoregressive models in political science and found that only 42% attempted to interpret spatial effects beyond the raw coefficients. The survey found no examples of studies computing the proper direct and indirect effect decompositions that depend on `W`. @drolc2021time showed that minor specification errors, including the wrong `W`, can push false discovery rates for policy diffusion to alarmingly high levels.
+
+In this chapter, I walk through the five substantive decisions that define `W`, explain why each one matters for substantive conclusions, and demonstrate with simulated data how sensitive spatial estimates can be to these choices. The goal is not to provide a definitive recipe for building `W`, but to make the case that these decisions deserve the same careful theoretical justification as any other part of a model.
+
+## What a Spatial Weights Matrix Is {#sec-what-a-spatial-weights-matrix-is}
+
+At its core, `W` is a table of exposure. Each row represents a receiving unit, each column a sending unit, and each cell records how much influence flows from sender to receiver.
+
+$$
+\mathbf{W} = [w_{ij}]_{N \times N}, \quad w_{i=j}=0
+$$ {#eq-W}
+
+The diagonal is zero by convention because units do not influence themselves through the spatial channel. Everything else (who is connected, how strongly, and at what scale) is a modeling choice. At a coarse level, these choices bundle together three distinct decisions, namely which pairs are connected at all ($w_{ij} = 0$ or not), how strongly (binary or weighted), and how scaled (raw or row-standardized). In practice, as the rest of this chapter shows, this trichotomy unfolds into five concrete design decisions: The connectivity concept, scope, weight function, normalization, and directionality.
+
+::: {.callout-note}
+## A note on notation. 
+
+In the formal SAR model, the spatial autoregressive parameter is conventionally written $\rho$. In simulation code and output tables throughout this chapter, I label the estimated value $\hat{\rho}$ as "spatial feedback" for readability. Some software packages and textbooks use $\lambda$ for the same parameter (or reserve $\lambda$ for the spatial error model). I use $\rho$ consistently in equations and refer to the same quantity in code output.
+:::
+
+A concrete example makes this tangible. Consider three countries linked by geographical contiguity.
+
+- USA shares a border with Canada and Mexico.
+- Canada and Mexico do not share a direct border.
+
+```{r}
+#| label: matrix-example-usa-canada-mexico
+
+W_border <- matrix(
+  c(
+    0, 1, 1,  # USA receives from: —, Canada, Mexico
+    1, 0, 0,  # Canada receives from: USA, —, —
+    1, 0, 0   # Mexico receives from: USA, —, —
+  ),
+  nrow = 3,
+  byrow = TRUE,
+  dimnames = list(
+    c("USA", "Canada", "Mexico"),
+    c("USA", "Canada", "Mexico")
+  )
+)
+
+W_border
+```
+
+The convention matters here. **Rows are receivers, columns are senders.** Row 1 (USA) has ones in the Canada and Mexico columns, meaning the USA *receives* influence from both. Row 2 (Canada) has a one only in the USA column, meaning Canada receives influence from the USA alone. This becomes concrete when I compute the spatial lag $Wy$, which is the quantity that enters a spatial regression.
+
+Suppose each country has a tax rate stored in a vector $y$. The USA has a tax rate of 21, Canada has a tax rate of 15, and Mexico has a tax rate of 30. The matrix product $Wy$ gives each country the weighted sum of its neighbors' tax rates.
+
+$$
+Wy =
+\begin{bmatrix} 0 & 1 & 1 \\ 1 & 0 & 0 \\ 1 & 0 & 0 \end{bmatrix}
+\begin{bmatrix} 21 \\ 15 \\ 30 \end{bmatrix}
+=
+\begin{bmatrix} 0 \cdot 21 + 1 \cdot 15 + 1 \cdot 30 \\ 1 \cdot 21 + 0 \cdot 15 + 0 \cdot 30 \\ 1 \cdot 21 + 0 \cdot 15 + 0 \cdot 30 \end{bmatrix}
+=
+\begin{bmatrix} 45 \\ 21 \\ 21 \end{bmatrix}
+$$
+
+Each row of the result is the spatial lag for one country. The USA's lag is $15 + 30 = 45$ (it receives from Canada and Mexico), Canada's is $21$ (it receives only from the USA), and Mexico's is $21$ (same). The column a country sits in determines *where it sends* influence, the row it sits in determines *what it receives*. In a spatial regression, this lag replaces the vague idea of "neighboring outcomes" with a precise, numerically defined quantity.
+
+This simple matrix already encodes a substantive claim, namely that the USA is exposed to influence from *two* neighbors while Canada and Mexico each face influence from *one*. If I study tax policy diffusion among these three countries, `W` says that the USA's policy is shaped by a weighted combination of Canadian and Mexican policies, but Canada is only affected by the USA. Whether that reflects reality depends entirely on whether contiguity is the right connectivity concept for the mechanism I have in mind.
+
+The rest of this chapter unpacks the five design decisions embedded in every `W`, explains the substantive implications of each choice, and illustrates how they can alter conclusions.
+
+
+## Decision 1: What Connects Units? {#sec-connectivity-concept}
+
+The most consequential choice in building `W` is deciding what relationship it represents. This is not a technical question but a theoretical one. As @neumayer2016w argue, "Spatial dependence is clearly not caused by geography, proximity and contiguity itself. Rather, it is caused by connectivity, i.e. contact in its various forms, transactions, interactions and relations."
+
+Yet geographic proximity remains the default in most applied work. Researchers routinely define neighbors as units that share a border (contiguity) or fall within some distance threshold, regardless of whether their theory implies that geography is the relevant channel. @disalvatore2021spatial make the important distinction between spatial *clustering* (which can arise from common exposure or similar environments) and spatial *interdependence* (which requires a causal transmission mechanism). Seeing neighboring countries adopt similar policies does not mean they influenced each other. They may simply be responding to similar economic pressures or other common shocks, producing spatial clustering through common exposure rather than causal interdependence. A useful rule of thumb is that similar outcomes among neighbors are not by themselves evidence of diffusion. Instead, they can often be explained by shared covariates (clustering) even when no causal transmission exists. The burden of proof falls on the researcher to demonstrate that a genuine transmission mechanism is at work.
+
+To illustrate, consider studying how corporate tax rates spread across countries. Several connectivity concepts are plausible, and each implies a different theory of tax competition.
+
+- **Geographic contiguity.** Neighboring countries undercut each other's tax rates to attract mobile capital and firms. This is appropriate when the mechanism is localized. Companies considering relocation compare nearby jurisdictions first, and politicians notice when a border neighbor cuts its rate.
+- **Trade volume.** Countries that trade heavily compete for the same pool of foreign direct investment. A major trading partner that slashes its corporate tax rate creates pressure to follow suit or risk losing investment. Here the relevant "neighbors" might be on different continents.
+- **Shared international organization membership.** Countries that belong to the same economic blocs (the EU, OECD, ASEAN) are exposed to common fiscal norms, peer review mechanisms, and institutional pressure toward tax harmonization. The transmission channel is institutional, not geographic.
+- **Capital flow networks.** Countries linked by large cross-border investment flows compete most directly for the same mobile tax base. The direction of competitive pressure follows capital, not latitude.
+
+Each of these produces a different `W` with a different set of non-zero entries and a different pattern of influence. Taking trade as an example, the USA's most important "neighbors" for tax competition would include China, the EU, and Mexico. Under contiguity, however, the USA's neighbors are exclusively Canada and Mexico.
+
+The choice matters empirically, not just conceptually. @tan2025parameterizing showed that different regressors in the same model can have different spatial ranges of influence. Military expenditure, for instance, might diffuse through security alliances (tightly clustered) while economic conditions diffuse through trade networks (more dispersed). Using a single geographic `W` for both forces a common spatial structure that fits neither mechanism well.
+
+## Decision 2: How Many Neighbors? {#sec-scope}
+
+Once I have chosen a connectivity concept, I must decide how broadly to define neighborhoods. Should each unit be influenced only by its first nearest contact, or by contacts two, three, or more steps away? This neighborhood *scope* decision directly controls how much of the network participates in the diffusion process.
+
+The common options are the following.
+
+- **First-order contiguity (Rook and Queen).** Rook contiguity connects only units that share an edge while Queen contiguity also connects units that share a vertex. Queen contiguity always produces at least as many neighbors as Rook, and is the more common default. The distinction matters most for regular grids (e.g., hexagonal tessellations), where edge-only neighbors are fewer than vertex neighbors. For irregular administrative boundaries, the two often coincide. In a study of corporate tax competition among European countries, Rook contiguity makes France and Germany neighbors, but not France and Poland. This captures the most localized competitive pressure, where firms might literally relocate across a shared border.
+- **k-nearest neighbors.** Each unit is connected to its *k* closest units, regardless of whether they share a boundary. "Closest" can mean geographically nearest, but it can also mean most similar on some relevant dimension (e.g., the *k* countries with the most similar GDP per capita, or the *k* firms with the most overlapping patent portfolios). This guarantees a minimum number of neighbors for every unit, avoiding isolates. With *k* = 5 in a geographic European setting, Iceland gets linked to Ireland, the UK, Norway, the Faroe Islands, and Denmark even though it shares no land border with any of them. However, this can create asymmetric relationships because if unit A is among B's *k* nearest, B is not necessarily among A's.
+- **Threshold-based cutoffs.** All units within a specified threshold are neighbors. For geographic distance, this might be 500 km (linking the Netherlands to Belgium, Germany, Luxembourg, and parts of France, but not to Spain or Italy). For non-geographic connectivity, the threshold could be a minimum trade volume (e.g., all country pairs exchanging more than \$1 billion annually), a minimum number of shared institutional memberships, or a minimum citation count between academic departments. For symmetric measures like geographic distance, this creates symmetric relationships. For directed measures (e.g., export share thresholds), the resulting matrix can be asymmetric unless explicitly symmetrized. Threshold-based approaches can produce highly uneven neighbor counts depending on how the units are distributed along the chosen dimension.
+- **Higher-order contiguity.** Second-order neighbors are first-order neighbors of first-order neighbors (excluding already-counted lower orders). Germany's first-order neighbors include France, Poland, and Austria. Its second-order neighbors would add Spain (through France), Lithuania (through Poland), and Hungary (through Austria), among others. This recursively expands the neighborhood in discrete steps. The same logic applies to non-geographic networks. In a trade network, a second-order neighbor of Germany would be a country that does not trade directly with Germany but trades heavily with one of Germany's major trading partners.
+
+The substantive implication is direct. Broader neighborhoods assume more far-reaching influence. A *k* = 3 nearest-neighbor matrix says each European country is meaningfully shaped by only its three closest peers. A *k* = 10 matrix says influence reaches much further. Neither is inherently correct, and the right scope depends on how far the theorized mechanism actually operates.
+
+This is not an idle concern. Consider studying how European countries set their corporate tax rates. A narrow contiguity-based `W` would say the Netherlands is influenced primarily by its direct border neighbors (Belgium, Germany). A broader *k* = 6 definition would also include Luxembourg, France, the UK, and Denmark, countries whose tax incentive packages the Netherlands actively competes against when attracting multinational headquarters. The choice between these two definitions is a choice between modeling localized border-crossing competition and modeling a wider race-to-the-bottom dynamic where countries compete with a larger set of jurisdictions for mobile corporate investment.
+
+
+## Decision 3: How Strong Is the Connection? {#sec-weight-function}
+
+Once I know *who* is connected and *how far* connections reach, I must decide whether all connections are equally strong or whether some are more important than others. This is the weight function choice.
+
+The simplest approach is **binary weighting**, where every connected pair gets a weight of 1 and every unconnected pair gets 0. The USA/Canada/Mexico matrix from @sec-what-a-spatial-weights-matrix-is is exactly this kind of matrix where each connected pair gets a 1, and that is all the information `W` encodes. Binary contiguity matrices are by far the most common in the social sciences. They are easy to construct and easy to interpret, but they make a strong assumption, namely that every neighbor matters equally, regardless of distance, size, or intensity of interaction.
+
+Alternative weight functions reflect the intuition that "closer means more influential".
+
+- **Inverse distance.** $w_{ij} = 1 / d_{ij}^{\alpha}$, where $d_{ij}$ is the distance between units and $\alpha$ controls how quickly influence decays. With $\alpha = 1$, a country twice as far away has half the weight. With $\alpha = 2$, it has a quarter. The choice of $\alpha$ is itself a substantive decision. Steep decay says only the nearest units matter. For the three-country example, using capital-to-capital distances (Ottawa–Washington: ~730 km, Mexico City–Washington: ~3,040 km) and $\alpha = 1$, the USA row would become $[0,\; 1/730,\; 1/3040] \approx [0,\; 0.00137,\; 0.00033]$. Canada now receives roughly four times the weight of Mexico, reflecting the geographic asymmetry that the binary matrix completely suppressed.
+- **Negative exponential.** $w_{ij} = e^{-d_{ij} \cdot \alpha}$, which provides a smoother decay. With the same distances and $\alpha = 0.001$, the weights become $e^{-730 \cdot 0.001} \approx 0.48$ for Canada and $e^{-3040 \cdot 0.001} \approx 0.05$ for Mexico. Canada is now about ten times as influential as Mexico, a steeper drop-off than inverse distance produced. As with inverse distance, the choice of $\alpha$ is consequential.
+- **Continuous measures of interaction.** Rather than transforming geographic distance, I can use the actual intensity of the relationship (trade volumes, migration flows, treaty co-membership counts) directly as weights. This is often more theoretically defensible than distance-based proxies because it measures the channel through which influence actually operates.
+
+To make the difference between these approaches concrete, consider how each would weight the USA's relationships with Canada and Mexico in a study of fiscal policy competition.
+
+| Weight function | $w_{\text{USA,Canada}}$ | $w_{\text{USA,Mexico}}$ | Interpretation |
+|---|---|---|---|
+| Binary contiguity | 1 | 1 | Both neighbors matter equally |
+| Inverse distance ($\alpha=1$) | $1/730 \approx 0.00137$ | $1/3040 \approx 0.00033$ | Canada is closer (Ottawa-Washington < Mexico City-Washington), so it gets *more* weight |
+| Trade volume (USD billions) | ~760 | ~840 | Mexico can receive more weight, reflecting stronger trade integration |
+
+The table reveals a key insight. Different weight functions do not just scale the same relationships up or down. They can *reorder* which neighbors matter most. Under inverse distance, Canada outweighs Mexico because Ottawa is much closer to Washington than Mexico City is. Under trade weights, Mexico can outweigh Canada because US-Mexico trade volume can be larger in aggregate. These are different substantive claims about the channel through which influence flows.
+
+More broadly, the choice of weight function interacts with the choice of measurement scale. The raw magnitude of a connectivity variable (trade volume in USD, migration in persons, distance in kilometers) may not map linearly onto the intensity of influence. A country that trades $20 billion with a neighbor is not necessarily influenced exactly twice as much as one trading $10 billion. Depending on the mechanism, a log transformation, a rank ordering, or a threshold might better capture the relevant variation.
+
+## Decision 4: How to Normalize? {#sec-normalization}
+
+```{r}
+#| label: simulate-base-data
+#| code-fold: true
+#| include: false
+
+set.seed(2026)
+
+if (dir.exists(".Rlibs")) {
+  .libPaths(c(normalizePath(".Rlibs"), .libPaths()))
+}
+library(spdep)
+library(spatialreg)
+
+n <- 50
+policy_pressure <- as.numeric(scale(rnorm(n)))
+fiscal_capacity <- as.numeric(scale(rnorm(n)))
+
+row_standardize <- function(W) {
+  rs <- rowSums(W)
+  W_std <- W
+  for (i in seq_len(nrow(W))) {
+    if (rs[i] > 0) {
+      W_std[i, ] <- W[i, ] / rs[i]
+    }
+  }
+  W_std
+}
+
+# True DGP uses a symmetric local chain (immediate neighbors only)
+W_true <- matrix(0, n, n)
+for (i in 1:n) {
+  if (i > 1) W_true[i, i - 1] <- 1
+  if (i < n) W_true[i, i + 1] <- 1
+}
+W_true <- row_standardize(W_true)
+
+lambda_true <- 0.45
+beta0 <- 0.3
+beta_fiscal <- 0.4
+beta_pressure <- 0.7
+sigma_eps <- 0.7
+
+I_n <- diag(n)
+eps <- rnorm(n, sd = sigma_eps)
+Xb <- beta0 + beta_fiscal * fiscal_capacity + beta_pressure * policy_pressure
+policy_adoption <- as.numeric(solve(I_n - lambda_true * W_true, Xb + eps))
+
+dat <- data.frame(
+  policy_adoption = policy_adoption,
+  policy_pressure = policy_pressure,
+  fiscal_capacity = fiscal_capacity
+)
+
+compute_effects <- function(beta_x, lambda, W) {
+  n <- nrow(W)
+  M <- diag(n) - lambda * W
+  S <- tryCatch(solve(M), error = function(e) NULL)
+  if (is.null(S)) return(c(direct = NA_real_, indirect = NA_real_, total = NA_real_))
+  direct <- beta_x * mean(diag(S))
+  total <- beta_x * mean(rowSums(S))
+  indirect <- total - direct
+  c(direct = direct, indirect = indirect, total = total)
+}
+
+compare_model_sensitivity <- function(formula, data, W_list, x_name = "policy_pressure") {
+  is_row_std <- function(W) {
+    rs <- rowSums(W)
+    all(rs == 0 | abs(rs - 1) < 1e-10)
+  }
+  out <- vector("list", length(W_list))
+  for (i in seq_along(W_list)) {
+    nm <- names(W_list)[i]
+    W <- W_list[[i]]
+    if (is_row_std(W)) {
+      listw <- spdep::mat2listw(W, style = "W", zero.policy = TRUE)
+    } else {
+      listw <- suppressWarnings(spdep::mat2listw(W, zero.policy = TRUE))
+    }
+    fit <- spatialreg::lagsarlm(formula, data = data, listw = listw,
+                                 method = "LU", zero.policy = TRUE)
+    lambda <- fit$rho
+    cf <- coef(fit)
+    beta_x <- if (x_name %in% names(cf)) cf[[x_name]] else NA_real_
+    eff <- compute_effects(beta_x = beta_x, lambda = lambda, W = W)
+    out[[i]] <- data.frame(
+      W = nm, spatial_feedback = lambda, beta_policy_pressure = beta_x,
+      direct_policy_pressure = eff["direct"],
+      indirect_policy_pressure = eff["indirect"],
+      total_policy_pressure = eff["total"],
+      stringsAsFactors = FALSE
+    )
+  }
+  do.call(rbind, out)
+}
+```
+
+Normalization is perhaps the most consequential "technical" decision because it is the one researchers most often make on autopilot. Row-standardization, which divides each row's entries by the row sum so that all rows sum to 1, is the default in virtually every spatial econometrics software package. Formally, each entry $w_{ij}$ of the raw matrix is replaced by
+
+$$
+w_{ij}^* = \frac{w_{ij}}{\sum_{k=1}^{N} w_{ik}}
+$$
+
+so that $\sum_j w_{ij}^* = 1$ for every row $i$. But as @neumayer2016w argue, this imposes a strong and often unjustified assumption, namely that every unit faces the same *total* exposure to spatial influence, regardless of how many neighbors it has.
+
+To understand what row-standardization does concretely, return to the USA/Canada/Mexico binary contiguity matrix from @sec-what-a-spatial-weights-matrix-is. The USA has 2 neighbors, while Canada and Mexico each have only 1. Applying the formula row by row gives
+
+$$
+W^* =
+\begin{bmatrix} 0 & 1/2 & 1/2 \\ 1/1 & 0 & 0 \\ 1/1 & 0 & 0 \end{bmatrix}
+=
+\begin{bmatrix} 0 & 0.5 & 0.5 \\ 1 & 0 & 0 \\ 1 & 0 & 0 \end{bmatrix}
+$$
+
+In the raw matrix, the USA's spatial lag is the *sum* of Canada's and Mexico's tax rates ($15 + 30 = 45$). After row-standardization it becomes their *average* ($(15 + 30)/2 = 22.5$). Canada and Mexico, having only one neighbor each, are unaffected because dividing by 1 changes nothing. Row-standardization has thus equalized total exposure (every row now sums to 1) by shrinking the influence of each individual neighbor for well-connected units.
+
+Is this reasonable? It depends on the mechanism.
+
+- **If influence operates through averaging** (e.g., a country looks at its neighbors' average corporate tax rate and adjusts toward it), then row-standardization is appropriate. The relevant quantity is the *average* neighbor tax rate, not the *sum*.
+- **If influence operates through accumulation** (e.g., a country faces more competitive pressure when more neighbors cut taxes), then row-standardization removes exactly the variation that matters. A country with many tax-cutting neighbors faces more pressure than one with few, but row-standardization makes them equivalent.
+
+Why does this matter statistically? @tiefelsdorf1999variance identified the mechanism. Row-standardization gives *higher leverage* to peripheral units with few connections, inflating their importance in the overall estimate. In the example above, Canada's spatial lag is determined entirely by one observation (the USA). The USA's lag, by contrast, averages over two countries, making it more stable. Scale this up to a real application with 30 European countries where Germany has 9 neighbors and Portugal has 1, and the leverage imbalance becomes substantial. This topology-induced heterogeneity means that normalization does not just rescale weights. It changes which units drive the results.
+
+### To Row-Standardize or Not
+
+The core normalization decision is whether to row-standardize. All other common normalization schemes (global standardization, spectral normalization, min-max normalization) divide every entry by the *same* constant. Because they are scalar multiples of the raw matrix, the spatial autoregressive coefficient can in principle absorb the scaling factor, making the spatial multiplier $(I - \hat{\rho} W)^{-1}$ equivalent up to reparameterization. In practice, however, the choice among these schemes is not entirely innocuous. Different scalings change the admissible parameter bounds for $\rho$ (which depend on the eigenvalues of `W`), can affect optimization and log-determinant numerics, and may matter more in complex multi-parameter models. Still, the substantive distinction is small compared to the choice between row-standardization and everything else.
+
+Row-standardization is fundamentally different. It divides each row by its *own* sum, so units with many connections get their individual weights shrunk more than units with few connections. This changes the *relative* influence structure, not just the scale. The spatial lag becomes an average rather than a sum, and the estimated effects genuinely change.
+
+The simulation below makes this concrete. I generate an asymmetric weighted matrix for 50 units where each unit has a random number of neighbors (1 to 12) with random connection strengths, mimicking a trade-flow network where both the number of partners and the intensity of exchange vary. I then compare the raw matrix against its row-standardized version.
+
+```{r}
+#| label: normalization-toggle
+
+# Build an asymmetric matrix with heterogeneous connectivity.
+# Each unit gets a random number of neighbors (1 to 12) with
+# random positive weights, mimicking a trade-flow network
+# where both the number of partners and trade intensity vary.
+set.seed(42)
+W_raw <- matrix(0, n, n)
+for (i in 1:n) {
+  n_neighbors <- sample(1:12, 1)
+  neighbors <- sample(setdiff(1:n, i), n_neighbors)
+  W_raw[i, neighbors] <- runif(n_neighbors, min = 0.2, max = 5)
+}
+diag(W_raw) <- 0
+
+# Row-standardized: each row sums to 1
+W_row_std <- row_standardize(W_raw)
+
+norm_tbl <- compare_model_sensitivity(
+  formula = policy_adoption ~ policy_pressure + fiscal_capacity,
+  data = dat,
+  W_list = list(
+    raw = W_raw,
+    row_standardized = W_row_std
+  )
+)
+
+norm_display <- norm_tbl[, c("W", "spatial_feedback",
+                              "indirect_policy_pressure",
+                              "total_policy_pressure")]
+names(norm_display) <- c("Normalization", "Spatial feedback (\u03c1)",
+                          "Indirect effect", "Total effect")
+num_cols <- vapply(norm_display, is.numeric, logical(1))
+norm_display[num_cols] <- lapply(norm_display[num_cols], round, 3)
+knitr::kable(norm_display, row.names = FALSE)
+```
+
+Note that the raw $\hat{\rho}$ values are not directly comparable across the two rows because the matrices have different scales. The substantively meaningful comparison is the indirect and total effects, which are computed from the full spatial multiplier. The table shows that the same connectivity structure produces different effect estimates depending on whether total exposure is preserved or equalized. In the raw matrix, row sums vary widely because units differ in how many trade partners they have and how intense those relationships are. Row-standardization collapses all of that variation to 1, asserting that every unit faces the same total influence. Whether that assertion matches the theory is the question researchers should ask before accepting the software default.
+
+::: {.callout-important}
+## Do Not Row-Standardize by Default
+
+Ask whether the theory implies that total exposure is homogeneous across units. If not, consider raw weights, spectral normalization, or a variance-stabilizing scheme. At minimum, check how sensitive results are to this choice.
+:::
+
+
+## Decision 5: Direction, Symmetry, and Isolates {#sec-direction-isolates}
+
+### Symmetric vs. Asymmetric Influence
+
+Most spatial weights matrices in practice are symmetric, meaning that if A influences B, then B influences A with the same weight. This is natural for geographic contiguity (if two countries share a border, the border exists for both) but it is a strong assumption for most other connectivity concepts.
+
+Influence is rarely reciprocal in equal measure. Consider the following examples.
+
+- **Tax competition.** Tax-competition models predict that smaller, more open countries face a more elastic corporate tax base and therefore stronger incentives to set lower corporate tax rates, whereas larger countries can sustain higher rates because market size and location-specific rents make investment and profits less responsive to taxation. Influence runs primarily from large to small, and a symmetric `W` would miss this asymmetry.
+- **Trade dependence.** A small country that exports 40% of its GDP to a large neighbor is far more exposed to policy changes in that neighbor than the reverse. Lithuania's economic policy is heavily shaped by Germany, but Germany barely notices Lithuania's fiscal choices.
+- **Security alliances.** Regional hegemons project influence outward to their smaller allies more than they absorb it. The USA's defense posture shapes South Korea's military spending, but the reverse effect is much weaker.
+
+When I use a symmetric `W`, I assert that all of these directional stories are wrong, that influence is always reciprocal and equal. This is a substantive claim, not a modeling convenience. If my theory suggests directional influence (e.g., large economies shape small economies more than vice versa), then `W` should be asymmetric.
+
+### Isolates and Disconnected Components
+
+Some units may have no neighbors under the chosen connectivity definition. Hawaii and Alaska have no contiguous US state neighbors. Island nations have no border neighbors. In a trade-weighted matrix, a sanctioned or autarkic country might have negligible connections. These units become *isolates* and their rows and columns in `W` are all zeros.
+
+Isolates create practical and interpretive problems. The spatial lag for an isolated unit is always zero, regardless of what happens elsewhere. In a spatial autoregressive model, this means isolated units contribute no information to estimating the spatial feedback parameter ($\rho$) and their outcomes are modeled as if no interdependence exists. If many units are isolates, the effective sample for estimating spatial parameters shrinks considerably.
+
+More subtly, isolates can fragment the connectivity graph into disconnected components. When the network splits into separate clusters with no cross-links, diffusion effects cannot cross the gaps. It is worth always checking connectivity statistics before modeling. How many connected components exist? Are there unexpected isolates? A bimodal distribution of neighbor counts may signal that the connectivity definition does not fit the geography or the theory equally well across all units. The lesson is not that isolates should be avoided at all costs, but that their presence should be diagnosed and their consequences understood. If my connectivity definition creates many isolates, it may not be the right definition for the question at hand.
+
+
+## Putting It All Together
+
+The five decisions discussed above (connectivity concept, scope, weight function, normalization, and directionality) interact to produce a specific `W`. To drive home how much these choices matter *jointly*, I now fit the same regression model to the same simulated data under four deliberately different matrices.
+
+1. **Symmetric local.** Only immediate neighbors, symmetric, row-standardized. Embodies a "look next door" theory where countries react only to direct border neighbors' tax rates.
+2. **Symmetric dense.** Neighbors up to two steps away, symmetric, row-standardized. Embodies a broader competitive dynamic where countries also react to their neighbors' neighbors.
+3. **Asymmetric forward.** Each unit is influenced only by units with a lower index, serving as a stand-in for an ordering from largest to smallest economy. Embodies a directed influence theory where larger economies shape smaller ones but not vice versa.
+4. **Asymmetric hub.** A few "hub" units influence everyone else, but are themselves uninfluenced by non-hubs. Embodies a hegemonic model where a few dominant economies set the competitive baseline for tax policy.
+
+```{r}
+#| label: candidate-matrices
+#| code-fold: true
+
+W_sym_local <- W_true  # already constructed above
+
+W_sym_dense <- matrix(0, n, n)
+for (i in 1:n) {
+  for (j in 1:n) {
+    if (i != j && abs(i - j) <= 2) W_sym_dense[i, j] <- 1
+  }
+}
+W_sym_dense <- row_standardize(W_sym_dense)
+
+W_asym_forward <- matrix(0, n, n)
+for (i in 1:n) {
+  if (i > 1) W_asym_forward[i, i - 1] <- 1
+  if (i > 2) W_asym_forward[i, i - 2] <- 0.5
+}
+W_asym_forward <- row_standardize(W_asym_forward)
+
+W_asym_hub <- matrix(0, n, n)
+hubs <- c(5, 20, 35, 45)
+for (i in 1:n) {
+  if (!i %in% hubs) {
+    W_asym_hub[i, hubs] <- c(1.0, 0.8, 0.6, 0.4)
+  }
+}
+W_asym_hub <- row_standardize(W_asym_hub)
+```
+
+```{r}
+#| label: sensitivity-comparison
+
+W_candidates <- list(
+  symmetric_local = W_sym_local,
+  symmetric_dense = W_sym_dense,
+  asymmetric_forward = W_asym_forward,
+  asymmetric_hub = W_asym_hub
+)
+
+sensitivity_tbl <- compare_model_sensitivity(
+  formula = policy_adoption ~ policy_pressure + fiscal_capacity,
+  data = dat, W_list = W_candidates
+)
+
+sens_display <- sensitivity_tbl[, c("W", "spatial_feedback",
+                                     "indirect_policy_pressure",
+                                     "total_policy_pressure")]
+names(sens_display) <- c("Matrix", "Spatial feedback (\u03c1)",
+                          "Indirect effect", "Total effect")
+num_cols <- vapply(sens_display, is.numeric, logical(1))
+sens_display[num_cols] <- lapply(sens_display[num_cols], round, 3)
+knitr::kable(sens_display, row.names = FALSE)
+```
+
+The indirect effect column is the estimated spillover, the part of policy pressure's impact that propagates through the network. If it changes sign, magnitude, or substantive importance across matrices, then the diffusion claim is only as credible as the justification for the chosen `W`.
+
+@tan2025parameterizing found exactly this pattern in a systematic analysis. Direct effects tend to be relatively robust to `W` specification, but indirect effects are highly sensitive. This is intuitive. The direct effect captures a unit's own response, while the indirect effect routes through the entire connectivity structure. Change the structure, change the spillover.
+
+This sensitivity is not a flaw in spatial models. It honestly reflects the fact that claims about interdependence are only as strong as the theory that defines interconnection. A study reporting large tax competition spillovers under one `W` without showing what happens under plausible alternatives is incomplete.
+
+
+## What Happens with a Theoretically Unjustified `W`?
+
+An important robustness check asks what happens if `W` has no theoretical basis at all. Below, I compare the theory-aligned matrix (which matches the true data-generating process) against a randomly generated matrix.
+
+```{r}
+#| label: misspecified-W
+
+set.seed(99)
+W_random <- matrix(sample(c(0, 1), n * n, replace = TRUE, prob = c(0.9, 0.1)), n, n)
+diag(W_random) <- 0
+W_random <- row_standardize(W_random)
+
+misspec_tbl <- compare_model_sensitivity(
+  formula = policy_adoption ~ policy_pressure + fiscal_capacity,
+  data = dat,
+  W_list = list(theory_aligned = W_sym_local, random_matrix = W_random)
+)
+
+mis_display <- misspec_tbl[, c("W", "spatial_feedback",
+                                "indirect_policy_pressure",
+                                "total_policy_pressure")]
+names(mis_display) <- c("Matrix", "Spatial feedback (\u03c1)",
+                         "Indirect effect", "Total effect")
+num_cols <- vapply(mis_display, is.numeric, logical(1))
+mis_display[num_cols] <- lapply(mis_display[num_cols], round, 3)
+knitr::kable(mis_display, row.names = FALSE)
+```
+
+A significant-looking $\hat{\rho}$ under a random matrix should not be interpreted as evidence for spatial diffusion. Spatial models will often find *some* spatial pattern in correlated data even when the connectivity structure is wrong. This is a core insight from @drolc2021time. Omitted spatially correlated covariates can create spurious diffusion findings regardless of which `W` is used, and false positive rates under misspecification are alarmingly high.
+
+The implication is straightforward. If I cannot defend the `W` theoretically, the spatial parameter estimates are uninterpretable. No amount of statistical significance compensates for a `W` that does not match the mechanism. If I find strong "tax competition spillovers" using a random connectivity matrix, I have not discovered tax competition. I have discovered that spatially correlated omitted variables can masquerade as diffusion.
+
+## How to Interpret Spatial Model Results 
+
+Even with the right `W`, interpreting spatial model results is harder than it looks. @whitten2021interpretation call interpretation "the final spatial frontier" and document how political scientists routinely misread their own models.
+
+The problem is that coefficients in a spatial autoregressive model do *not* have the same straightforward interpretation as OLS coefficients. In a standard SAR model (@eq-sar),
+
+$$
+y = \rho W y + X\beta + \varepsilon
+$$ {#eq-sar}
+
+the coefficient $\beta$ captures only the *zero-order direct effect*, the immediate impact of $X$ on $y$ before any spatial feedback occurs. But changes in $X_i$ propagate through the network. They affect $y_i$ directly, which affects $y_i$'s neighbors through $Wy$, which feeds back to $y_i$ and propagates to neighbors' neighbors, and so on. The full effect is captured by the spatial multiplier (@eq-multiplier),
+
+$$
+(I_N - \rho W)^{-1} X\beta
+$$ {#eq-multiplier}
+
+This multiplier expands as $I + \rho W + \rho^2 W^2 + \rho^3 W^3 + \ldots$, showing that effects cascade through the network with diminishing intensity at each step. The total effect on unit $i$ from a change in unit $j$'s covariate depends on $j$'s specific position in the network as defined by `W`. This means that different units generally have different total effects, and a single coefficient cannot summarize them.
+
+::: {.callout-note}
+## When Does the Multiplier Exist?
+
+The inverse $(I_N - \rho W)^{-1}$ exists only when $\rho$ lies within bounds determined by the eigenvalues of `W`. For a **symmetric** row-standardized matrix, eigenvalues are real and bounded between $-1$ and $1$, giving the common sufficient condition $|\rho| < 1$. For **asymmetric** matrices (including asymmetric row-standardized ones), eigenvalues can be complex, and the admissible range must be derived from the real parts of the eigenvalues or computed numerically via the log-determinant. For non-standardized matrices with real eigenvalues, the admissible range is $1/\omega_{\min} < \rho < 1/\omega_{\max}$, where $\omega_{\min}$ and $\omega_{\max}$ are the smallest and largest eigenvalues of `W`. This is one reason normalization choices matter in practice even when they do not change estimated effects in principle. They change the parameter space over which the optimizer searches.
+:::
+
+The correct approach, as @whitten2021interpretation demonstrate, is to compute the matrix of partial derivatives and report summary measures, specifically the *average direct effect* (diagonal elements of the multiplier matrix), the *average indirect effect* (off-diagonal elements), and the *average total effect* (their sum). None of these equal the raw coefficient $\beta$, though they reduce to $\beta$ when $\rho = 0$ (i.e., when there is no spatial dependence).
+
+This matters for every decision discussed in this chapter because the multiplier $(I_N - \rho W)^{-1}$ depends on `W`. Changing `W` changes not only the coefficient estimates but the entire mapping from coefficients to substantive effects.
+
+To make this concrete, return to the corporate tax competition setting. If I model how policy pressure affects tax policy adoption with a SAR model, the raw coefficient $\hat{\beta}$ tells me the immediate effect of a one-unit increase in policy pressure on a country's own policy adoption *before* any spatial feedback. But when that country adjusts its tax rate, its neighbors notice and may respond, and those responses feed back. The average direct effect includes this feedback echo. The average indirect effect captures how changing one country's policy pressure affects *other* countries' outcomes through the connectivity structure. Both quantities depend entirely on `W`, because `W` defines the paths along which competitive pressure propagates. The sensitivity analysis in the previous section showed just how much these indirect effects can shift when I change the connectivity assumptions.
+
+### Implementing Interpretation in R
+
+In R, `spatialreg::impacts()` computes average direct, indirect, and total effects from a fitted SAR model.
+
+```{r}
+#| label: r-interpretation-impacts
+#| message: false
+#| warning: false
+
+# dat and W_sym_local are already defined above in this chapter.
+listw_obj <- spdep::mat2listw(W_sym_local, style = "W")
+sar_fit <- spatialreg::lagsarlm(
+  policy_adoption ~ policy_pressure + fiscal_capacity,
+  data = dat,
+  listw = listw_obj,
+  method = "eigen",
+  zero.policy = TRUE
+)
+
+imp <- spatialreg::impacts(sar_fit, listw = listw_obj, R = 2000)
+imp_summary <- summary(imp, zstats = FALSE, short = TRUE)
+bnames <- attr(imp_summary, "bnames")
+target_idx <- grep("^policy_pressure", bnames)[1]
+
+lib_direct <- as.numeric(imp_summary$res$direct[target_idx, 1])
+lib_indirect <- as.numeric(imp_summary$res$indirect[target_idx, 1])
+lib_total <- as.numeric(imp_summary$res$total[target_idx, 1])
+
+get_sd <- function(sum_obj, idx) {
+  stat <- sum_obj$statistics
+  if (is.null(stat)) return(NA_real_)
+  sd_col <- grep("^SD$|std", colnames(stat), ignore.case = TRUE)
+  if (!length(sd_col)) sd_col <- 2
+  as.numeric(stat[idx, sd_col[1]])
+}
+
+get_ci <- function(sum_obj, idx) {
+  qmat <- sum_obj$quantiles
+  if (is.null(qmat)) return(c(NA_real_, NA_real_))
+  lo_col <- grep("^2\\.5%$|^2\\.5 %$|^2.5%$", colnames(qmat))
+  hi_col <- grep("^97\\.5%$|^97\\.5 %$|^97.5%$", colnames(qmat))
+  if (!length(lo_col) || !length(hi_col)) {
+    return(c(as.numeric(qmat[idx, 1]), as.numeric(qmat[idx, ncol(qmat)])))
+  }
+  c(as.numeric(qmat[idx, lo_col[1]]), as.numeric(qmat[idx, hi_col[1]]))
+}
+
+lib_direct_se <- get_sd(imp_summary$direct_sum, target_idx)
+lib_indirect_se <- get_sd(imp_summary$indirect_sum, target_idx)
+lib_total_se <- get_sd(imp_summary$total_sum, target_idx)
+
+lib_direct_ci <- get_ci(imp_summary$direct_sum, target_idx)
+lib_indirect_ci <- get_ci(imp_summary$indirect_sum, target_idx)
+lib_total_ci <- get_ci(imp_summary$total_sum, target_idx)
+
+impact_tbl <- data.frame(
+  Effect = c("Direct", "Indirect", "Total"),
+  Estimate = c(lib_direct, lib_indirect, lib_total),
+  SE = c(lib_direct_se, lib_indirect_se, lib_total_se),
+  CI_95 = c(
+    sprintf("[%.4f, %.4f]", lib_direct_ci[1], lib_direct_ci[2]),
+    sprintf("[%.4f, %.4f]", lib_indirect_ci[1], lib_indirect_ci[2]),
+    sprintf("[%.4f, %.4f]", lib_total_ci[1], lib_total_ci[2])
+  ),
+  stringsAsFactors = FALSE
+)
+
+knitr::kable(
+  impact_tbl,
+  digits = 4,
+  col.names = c("Effect", "Estimate", "SE", "95% CI"),
+  caption = "Average impacts of policy pressure from spatialreg::impacts()"
+)
+```
+
+The table shows the average direct, indirect, and total effects of policy pressure with simulation-based standard errors and confidence intervals.
+
+::: {.callout-note}
+## `W` Choice and Model Choice Interact
+
+This chapter focuses on the SAR (spatial autoregressive lag) model, but the choice of `W` is not separable from the choice of model specification. A SAR model assumes that influence flows through the dependent variable ($\rho Wy$). An SLX model places spatial lags on the covariates instead ($WX\theta$), assuming neighbors' characteristics matter but not their outcomes. An SDM (spatial Durbin model) includes both $\rho Wy$ and $WX\theta$. An SEM (spatial error model) places spatial structure on the error term, capturing unmodeled spatial correlation without implying a diffusion mechanism. Each specification makes different demands on `W` and assigns it a different substantive role. If the theory implies that neighbors' *policies* matter (competitive pressure), SAR or SDM is appropriate. If the theory implies that neighbors' *characteristics* matter (contextual effects), SLX may suffice. The five decisions discussed in this chapter apply to all of these models, but their consequences for estimation and interpretation differ across model types.
+:::
+
+
+## Practical Protocol for Matrix Specification
+
+The following checklist synthesizes the lessons of this chapter into a workflow for specifying `W` in any project.
+
+1. **State the mechanism.** Write down in one sentence what relationship creates interdependence between the units. If this cannot be stated clearly, the spatial model is not ready to be estimated.
+2. **Choose the connectivity concept.** Based on the mechanism, select the variable that best captures the relevant link (borders, trade flows, alliance ties, migration, institutional co-membership, etc.).
+3. **Justify the scope.** Decide how far influence reaches and why. Is there a reason to expect that only immediate neighbors matter, or does the mechanism operate at greater distance?
+4. **Choose the weight function.** Decide whether connections are binary or graded, and if graded, what function maps the connectivity variable to weights. Consider whether the raw scale of the connectivity variable is appropriate or needs transformation.
+5. **Justify the normalization.** Do not row-standardize by default. Ask whether the theory implies homogeneous total exposure across units. If it does, row-standardization is appropriate. If not, consider alternatives.
+6. **Check for direction and isolates.** Is influence symmetric or directional? Are any units disconnected? If so, understand what that implies for the estimates.
+7. **Construct at least one alternative `W`.** Choose a matrix that is plausible under the same general theory but differs in scope, weight function, or connectivity concept. This is not optional but rather the minimum standard for credible spatial analysis.
+8. **Diagnose before modeling.** Check neighbor count distributions, the number of connected components, and whether any units are isolates.
+9. **Report sensitivity.** Fit the same model under the primary and alternative matrices. Report the range of key effects (especially indirect effects) across specifications.
+10. **State uncertainty honestly.** If the conclusions change under plausible alternative matrices, say so. This is not a weakness but rather intellectual honesty about a modeling choice that profoundly shapes results.
+
+::: {.callout-important}
+## Beware Endogenous Connectivity
+
+Some connectivity measures (trade volumes, migration flows, capital flows) can themselves be influenced by the outcome variable. If you use bilateral trade to define `W` and then model how trade affects tax policy, you have a circularity problem. The fact that geographic distance is exogenous does not mean it is theoretically appropriate, but it *is* one reason geographic matrices remain popular despite their theoretical limitations. When using endogenous connectivity measures, consider using a theoretically motivated instrument. In panel settings, a common partial remedy is to lag `W` in time (e.g., using trade volumes from the previous period), though this does not fully resolve endogeneity if the connectivity measure is serially correlated. More broadly, researchers working with panel data should consider whether `W` should vary over time at all. A time-invariant `W` assumes a fixed network structure, which may be appropriate for geography but implausible for trade or alliance ties that evolve.
+:::
+
+::: {.callout-note}
+## Reporting Checklist
+
+When writing up spatial analyses, the following information should appear in the main text or a prominent appendix, not buried in a footnote.
+
+- **Mechanism statement.** What process creates interdependence between units? (e.g., "Countries compete for mobile corporate investment by adjusting tax rates in response to their trading partners' fiscal policies.")
+- **Primary W.** Connectivity concept, scope, weight function, and normalization. (e.g., "Bilateral trade volume among EU member states, inverse-distance weighted, not row-standardized because the theory implies that total trade exposure matters.")
+- **Alternative W(s).** What was tried and why. (e.g., "Binary contiguity and k=5 nearest neighbors by GDP similarity as robustness checks.")
+- **Diagnostics.** Neighbor count distribution, isolates, and connected components.
+- **Key effect sensitivity.** How direct and indirect effects change across W specifications.
+- **Interpretation.** What the results mean given the sensitivity range.
+:::
+
+
+## Conclusion
+
+The connectivity matrix is not a technical nuisance to be dispatched with software defaults. It is a substantive hypothesis about the structure of interdependence, and it shapes every spatial estimate reported. Whether I am modeling corporate tax competition among European countries, policy diffusion through trade networks, or security spillovers across alliance partners, each decision embedded in `W` (what connects units, how broadly, how strongly, at what scale, and in which direction) is a claim about how the social world works.
+
+As the simulations throughout this chapter have shown, these choices change results. Row-standardization versus raw weights produces different indirect effects because it changes which units drive the estimates. Symmetric versus asymmetric matrices encode different theories about the direction of influence. Narrow versus broad neighborhood scope controls how far spillovers can reach. And a theoretically unjustified `W` can produce spurious evidence of diffusion that has nothing to do with the mechanism under study.
+
+The minimum standard, following the arguments of @neumayer2016w, @whitten2021interpretation, @drolc2021time, and @tan2025parameterizing, is to report at least one theoretically plausible alternative matrix, show how conclusions change under it, and discuss what that sensitivity means for the strength of the claims.
+
+## References
+
+::: {#refs}
+:::

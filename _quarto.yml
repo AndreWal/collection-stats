@@ -10,8 +10,12 @@ book:
   chapters:
     - index.qmd
     - chapters/Categorical_Compositional.qmd
-    - chapters/Interaction_Polynomials.qmd
     - chapters/Comparing_Estimates.qmd
+    - chapters/Interaction_Polynomials.qmd
+    - chapters/Spatial_Weights_Matrices.qmd
+
+
+bibliography: references.bib
 
 format:
   html:
