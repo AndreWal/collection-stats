@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference – From Beta to Meaning: A Guide to Interpreting Regression Analysis</title>
+<title>3&nbsp; Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference – From Beta to Meaning: A Guide to Interpreting Regression Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,7 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/Interaction_Polynomials.html" rel="prev">
+<link href="../chapters/Interaction_Polynomials.html" rel="next">
+<link href="../chapters/Categorical_Compositional.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -144,7 +145,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/Comparing_Estimates.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/Comparing_Estimates.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -183,14 +184,20 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/Interaction_Polynomials.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span></a>
+  <a href="../chapters/Comparing_Estimates.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/Comparing_Estimates.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></span></a>
+  <a href="../chapters/Interaction_Polynomials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/Spatial_Weights_Matrices.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Building Spatial Weights Matrices Without Guesswork</span></span></a>
   </div>
 </li>
     </ul>
@@ -203,24 +210,24 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">4.1</span> Why This Chapter Exists</a></li>
-  <li><a href="#a-decision-tree-for-comparing-two-estimates" id="toc-a-decision-tree-for-comparing-two-estimates" class="nav-link" data-scroll-target="#a-decision-tree-for-comparing-two-estimates"><span class="header-section-number">4.2</span> A Decision Tree for Comparing Two Estimates</a></li>
-  <li><a href="#why-ci-overlap-and-threshold-crossing-are-unreliable" id="toc-why-ci-overlap-and-threshold-crossing-are-unreliable" class="nav-link" data-scroll-target="#why-ci-overlap-and-threshold-crossing-are-unreliable"><span class="header-section-number">4.3</span> Why CI Overlap and Threshold Crossing Are Unreliable</a></li>
-  <li><a href="#case-i---independent-samples-two-separate-experiments" id="toc-case-i---independent-samples-two-separate-experiments" class="nav-link" data-scroll-target="#case-i---independent-samples-two-separate-experiments"><span class="header-section-number">4.4</span> Case I - Independent Samples: Two Separate Experiments</a>
+  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">3.1</span> Why This Chapter Exists</a></li>
+  <li><a href="#a-decision-tree-for-comparing-two-estimates" id="toc-a-decision-tree-for-comparing-two-estimates" class="nav-link" data-scroll-target="#a-decision-tree-for-comparing-two-estimates"><span class="header-section-number">3.2</span> A Decision Tree for Comparing Two Estimates</a></li>
+  <li><a href="#why-ci-overlap-and-threshold-crossing-are-unreliable" id="toc-why-ci-overlap-and-threshold-crossing-are-unreliable" class="nav-link" data-scroll-target="#why-ci-overlap-and-threshold-crossing-are-unreliable"><span class="header-section-number">3.3</span> Why CI Overlap and Threshold Crossing Are Unreliable</a></li>
+  <li><a href="#case-i---independent-samples-two-separate-experiments" id="toc-case-i---independent-samples-two-separate-experiments" class="nav-link" data-scroll-target="#case-i---independent-samples-two-separate-experiments"><span class="header-section-number">3.4</span> Case I - Independent Samples: Two Separate Experiments</a>
   <ul class="collapse">
-  <li><a href="#the-tempting-but-wrong-analysis" id="toc-the-tempting-but-wrong-analysis" class="nav-link" data-scroll-target="#the-tempting-but-wrong-analysis"><span class="header-section-number">4.4.1</span> The Tempting but Wrong Analysis</a></li>
-  <li><a href="#correct-approach-a-direct-z-test-on-delta" id="toc-correct-approach-a-direct-z-test-on-delta" class="nav-link" data-scroll-target="#correct-approach-a-direct-z-test-on-delta"><span class="header-section-number">4.4.2</span> Correct Approach A: Direct z-Test on <span class="math inline">\(\Delta\)</span></a></li>
-  <li><a href="#correct-approach-b-pooled-model-with-interaction-term" id="toc-correct-approach-b-pooled-model-with-interaction-term" class="nav-link" data-scroll-target="#correct-approach-b-pooled-model-with-interaction-term"><span class="header-section-number">4.4.3</span> Correct Approach B: Pooled Model with Interaction Term</a></li>
+  <li><a href="#the-tempting-but-wrong-analysis" id="toc-the-tempting-but-wrong-analysis" class="nav-link" data-scroll-target="#the-tempting-but-wrong-analysis"><span class="header-section-number">3.4.1</span> The Tempting but Wrong Analysis</a></li>
+  <li><a href="#correct-approach-a-direct-z-test-on-delta" id="toc-correct-approach-a-direct-z-test-on-delta" class="nav-link" data-scroll-target="#correct-approach-a-direct-z-test-on-delta"><span class="header-section-number">3.4.2</span> Correct Approach A: Direct z-Test on <span class="math inline">\(\Delta\)</span></a></li>
+  <li><a href="#correct-approach-b-pooled-model-with-interaction-term" id="toc-correct-approach-b-pooled-model-with-interaction-term" class="nav-link" data-scroll-target="#correct-approach-b-pooled-model-with-interaction-term"><span class="header-section-number">3.4.3</span> Correct Approach B: Pooled Model with Interaction Term</a></li>
   </ul></li>
-  <li><a href="#case-ii---non-independent-estimates-same-units-split-over-time" id="toc-case-ii---non-independent-estimates-same-units-split-over-time" class="nav-link" data-scroll-target="#case-ii---non-independent-estimates-same-units-split-over-time"><span class="header-section-number">4.5</span> Case II - Non-Independent Estimates: Same Units Split over Time</a>
+  <li><a href="#case-ii---non-independent-estimates-same-units-split-over-time" id="toc-case-ii---non-independent-estimates-same-units-split-over-time" class="nav-link" data-scroll-target="#case-ii---non-independent-estimates-same-units-split-over-time"><span class="header-section-number">3.5</span> Case II - Non-Independent Estimates: Same Units Split over Time</a>
   <ul class="collapse">
-  <li><a href="#the-tempting-but-wrong-analysis-split-and-compare" id="toc-the-tempting-but-wrong-analysis-split-and-compare" class="nav-link" data-scroll-target="#the-tempting-but-wrong-analysis-split-and-compare"><span class="header-section-number">4.5.1</span> The Tempting but Wrong Analysis: Split and Compare</a></li>
-  <li><a href="#the-correct-approach-pooled-interaction-model" id="toc-the-correct-approach-pooled-interaction-model" class="nav-link" data-scroll-target="#the-correct-approach-pooled-interaction-model"><span class="header-section-number">4.5.2</span> The Correct Approach: Pooled Interaction Model</a></li>
-  <li><a href="#robustness-alternative-break-years" id="toc-robustness-alternative-break-years" class="nav-link" data-scroll-target="#robustness-alternative-break-years"><span class="header-section-number">4.5.3</span> Robustness: Alternative Break Years</a></li>
+  <li><a href="#the-tempting-but-wrong-analysis-split-and-compare" id="toc-the-tempting-but-wrong-analysis-split-and-compare" class="nav-link" data-scroll-target="#the-tempting-but-wrong-analysis-split-and-compare"><span class="header-section-number">3.5.1</span> The Tempting but Wrong Analysis: Split and Compare</a></li>
+  <li><a href="#the-correct-approach-pooled-interaction-model" id="toc-the-correct-approach-pooled-interaction-model" class="nav-link" data-scroll-target="#the-correct-approach-pooled-interaction-model"><span class="header-section-number">3.5.2</span> The Correct Approach: Pooled Interaction Model</a></li>
+  <li><a href="#robustness-alternative-break-years" id="toc-robustness-alternative-break-years" class="nav-link" data-scroll-target="#robustness-alternative-break-years"><span class="header-section-number">3.5.3</span> Robustness: Alternative Break Years</a></li>
   </ul></li>
-  <li><a href="#practical-pitfalls" id="toc-practical-pitfalls" class="nav-link" data-scroll-target="#practical-pitfalls"><span class="header-section-number">4.6</span> Practical Pitfalls</a></li>
-  <li><a href="#appendix-which-method-when-cheat-sheet" id="toc-appendix-which-method-when-cheat-sheet" class="nav-link" data-scroll-target="#appendix-which-method-when-cheat-sheet"><span class="header-section-number">4.7</span> Appendix: “Which Method When?” Cheat Sheet</a></li>
-  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">4.8</span> Further Reading</a></li>
+  <li><a href="#practical-pitfalls" id="toc-practical-pitfalls" class="nav-link" data-scroll-target="#practical-pitfalls"><span class="header-section-number">3.6</span> Practical Pitfalls</a></li>
+  <li><a href="#appendix-which-method-when-cheat-sheet" id="toc-appendix-which-method-when-cheat-sheet" class="nav-link" data-scroll-target="#appendix-which-method-when-cheat-sheet"><span class="header-section-number">3.7</span> Appendix: “Which Method When?” Cheat Sheet</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">3.8</span> Further Reading</a></li>
   </ul>
 </nav>
     </div>
@@ -229,7 +236,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Comparing Estimates Correctly: Why ‘Significant’ vs ‘Not Significant’ Is Not a Difference</span></h1>
 <p class="subtitle lead">From p-value thresholding to valid cross-group inference</p>
 </div>
 
@@ -248,8 +255,8 @@ window.Quarto = {
 
 
 <p><em>Disclaimer: All data used in this chapter is simulated and does not reflect real-world data. The purpose of this chapter is to illustrate how to correctly compare estimates across groups, time periods, or contexts, not to make any claims about the real-world relationships used in the examples.</em></p>
-<section id="why-this-chapter-exists" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">4.1</span> Why This Chapter Exists</h2>
+<section id="why-this-chapter-exists" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">3.1</span> Why This Chapter Exists</h2>
 <p>Researchers routinely compare findings across subgroups, time periods, or model specifications. A pattern I have seen again and again goes like this:</p>
 <blockquote class="blockquote">
 <p>Study A finds a statistically significant treatment effect (<span class="math inline">\(p &lt; .05\)</span>). Study B finds a non-significant effect (<span class="math inline">\(p = .12\)</span>). Conclusion: “The effect differs between the two settings.”</p>
@@ -257,7 +264,7 @@ window.Quarto = {
 <p>That conclusion is wrong. Whether two estimates lie on different sides of an arbitrary threshold (like 0.05) is neither a necessary nor sufficient condition for concluding that they differ. In fact, two estimates that are significant at the 0.05 level can differ as can two estimates that are not significant at the 0.05 level. The key question is whether the <strong>difference</strong> between the two estimates is statistically distinguishable from zero, not whether each estimate individually crosses a threshold. In other words, the estimand of interest is:</p>
 <p><span id="eq-delta"><span class="math display">\[
 \Delta = \hat\theta_1 - \hat\theta_2
-\tag{4.1}\]</span></span></p>
+\tag{3.1}\]</span></span></p>
 <p>Throughout this chapter, I teach one core idea: <strong>your question is about <span class="math inline">\(\Delta\)</span>, not about whether each estimate individually crosses 0.05.</strong></p>
 <p>To make this concrete, consider a simple, hypothetical setup. Two research teams in different countries run the same survey experiment with the question whether exposure to a corruption scandal vignette reduces trust in parliament. In both countries, respondents are randomly assigned to read either a short news vignette about confirmed high-level corruption (treatment) or a neutral governance news article (control). The dependent variable is trust in parliament on a 0–10 scale. Both experiments use the same true treatment effect, but one has a slightly larger sample. Their estimates and p-values can easily fall on different sides of 0.05, even though the underlying effect is identical.</p>
 <div class="cell">
@@ -307,25 +314,25 @@ Wrong vs Right
 </div>
 <p>The rest of this chapter shows how to do it right, across two common scenarios: Independent samples and dependent samples with focus on time-period splits on the same units.</p>
 </section>
-<section id="a-decision-tree-for-comparing-two-estimates" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="a-decision-tree-for-comparing-two-estimates"><span class="header-section-number">4.2</span> A Decision Tree for Comparing Two Estimates</h2>
+<section id="a-decision-tree-for-comparing-two-estimates" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="a-decision-tree-for-comparing-two-estimates"><span class="header-section-number">3.2</span> A Decision Tree for Comparing Two Estimates</h2>
 <p>Before diving into specific cases, I provide a decision tree that structures the key choices. When comparing two estimates, two questions determine the appropriate method:</p>
 <p><strong>1. Are the estimates independent?</strong></p>
 <p>If the two estimates come from entirely separate samples with no shared units, they are independent. If the same individuals, countries, or other units contribute to both estimates, the estimates are correlated and the comparison must account for the covariance.</p>
 <p>For the direct comparison of two estimates, two formulas are essential. When the estimates are <strong>independent</strong>:</p>
 <p><span id="eq-se-independent"><span class="math display">\[
 SE(\Delta) = \sqrt{SE(\hat\theta_1)^2 + SE(\hat\theta_2)^2}
-\tag{4.2}\]</span></span></p>
+\tag{3.2}\]</span></span></p>
 <p>When the estimates are <strong>not independent</strong> (e.g., same units in both groups), the covariance must be accounted for:</p>
 <p><span id="eq-se-dependent"><span class="math display">\[
 SE(\Delta) = \sqrt{SE(\hat\theta_1)^2 + SE(\hat\theta_2)^2 - 2  Cov(\hat\theta_1, \hat\theta_2)}
-\tag{4.3}\]</span></span></p>
-<p>The independence condition is crucial. If the same individuals or a subset of the same individuals appear in both groups, using <a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a> when <a href="#eq-se-dependent" class="quarto-xref">Equation&nbsp;<span>4.3</span></a> is required will produce incorrect standard errors, typically too large, making the test conservative but misleading.</p>
+\tag{3.3}\]</span></span></p>
+<p>The independence condition is crucial. If the same individuals or a subset of the same individuals appear in both groups, using <a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>3.2</span></a> when <a href="#eq-se-dependent" class="quarto-xref">Equation&nbsp;<span>3.3</span></a> is required will produce incorrect standard errors, typically too large, making the test conservative but misleading.</p>
 <p><strong>2. Is the model linear or nonlinear?</strong></p>
 <p>In linear models, differences in coefficients translate directly to differences in effects. In nonlinear models (logit, Poisson, etc.), coefficient differences do not map straightforwardly to differences in substantive quantities. In those cases, compare marginal effects or predicted probabilities instead.</p>
 </section>
-<section id="why-ci-overlap-and-threshold-crossing-are-unreliable" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="why-ci-overlap-and-threshold-crossing-are-unreliable"><span class="header-section-number">4.3</span> Why CI Overlap and Threshold Crossing Are Unreliable</h2>
+<section id="why-ci-overlap-and-threshold-crossing-are-unreliable" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="why-ci-overlap-and-threshold-crossing-are-unreliable"><span class="header-section-number">3.3</span> Why CI Overlap and Threshold Crossing Are Unreliable</h2>
 <p>A related heuristic that researchers often use is: “The 95% confidence intervals overlap, so there is no significant difference.” This rule is not generally valid.</p>
 <p>For two <strong>independent</strong> estimates with equal standard errors, non-overlapping 95% CIs actually correspond to a test at roughly the 0.6% level, not the 5% level. In other words, the “no overlap” rule is far too strict. It will miss many true differences. Conversely, a modest overlap does not mean the difference is zero.</p>
 <p>The following simulation illustrates this. I generate two independent estimates whose true difference is nonzero and show that the 95% CIs can overlap even when the direct test of <span class="math inline">\(\Delta\)</span> is significant.</p>
@@ -409,7 +416,7 @@ SE(\Delta) = \sqrt{SE(\hat\theta_1)^2 + SE(\hat\theta_2)^2 - 2  Cov(\hat\theta_1
 <img src="Comparing_Estimates_files/figure-html/fig-ci-overlap-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ci-overlap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% CI for the difference. 95% CI overlap does not imply the difference is zero.
+Figure&nbsp;3.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% CI for the difference. 95% CI overlap does not imply the difference is zero.
 </figcaption>
 </figure>
 </div>
@@ -418,8 +425,8 @@ Figure&nbsp;4.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% C
 <p>As we can see on the left plot, the individual CIs overlap. However, the result of the difference-in-means test on the right plot shows that the difference between both point estimates is statistically significant and the CI does not include the value of zero.</p>
 <p>The key lesson is that CI overlap is a <strong>heuristic</strong>, not a replacement for a direct test. For independent estimates with equal variance, one can use approximately 83–84% CIs to achieve a visual test that corresponds to the 5% level, but I recommend always computing the direct test of <span class="math inline">\(\Delta\)</span> instead of relying on visual rules. In the next section, I walk through how to do that correctly across two common scenarios.</p>
 </section>
-<section id="case-i---independent-samples-two-separate-experiments" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="case-i---independent-samples-two-separate-experiments"><span class="header-section-number">4.4</span> Case I - Independent Samples: Two Separate Experiments</h2>
+<section id="case-i---independent-samples-two-separate-experiments" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="case-i---independent-samples-two-separate-experiments"><span class="header-section-number">3.4</span> Case I - Independent Samples: Two Separate Experiments</h2>
 <p>I now work through the first and simplest scenario: Comparing treatment effects from two entirely separate experiments or samples. I continue with the corruption and trust data from the beginning of this chapter, where two research teams in different countries each ran a randomized experiment to evaluate whether exposure to a corruption scandal vignette reduces trust in parliament. The samples are completely independent. Recall that both experiments draw from the same data-generating process with the same true effect (−0.5 points), but the p-values fell on different sides of 0.05. The correct analysis should confirm that there is no evidence that the effects differ.</p>
 <p>First, I assemble the motivation data into data frames suitable for regression:</p>
 <div class="cell">
@@ -436,8 +443,8 @@ Figure&nbsp;4.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% C
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>data_pooled <span class="ot">&lt;-</span> <span class="fu">rbind</span>(data_A, data_B)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="the-tempting-but-wrong-analysis" class="level3" data-number="4.4.1">
-<h3 data-number="4.4.1" class="anchored" data-anchor-id="the-tempting-but-wrong-analysis"><span class="header-section-number">4.4.1</span> The Tempting but Wrong Analysis</h3>
+<section id="the-tempting-but-wrong-analysis" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="the-tempting-but-wrong-analysis"><span class="header-section-number">3.4.1</span> The Tempting but Wrong Analysis</h3>
 <p>The tempting approach is to run separate regressions and compare the p-values:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model_A <span class="ot">&lt;-</span> <span class="fu">lm</span>(trust <span class="sc">~</span> treat, <span class="at">data =</span> data_A)</span>
@@ -466,9 +473,9 @@ Figure&nbsp;4.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% C
 </div>
 <p>Looking at these results separately, one might conclude that the corruption vignette “reduces trust” in one country but “has no effect” in the other, and therefore that the effects differ. But that reasoning is about thresholds, not about <span class="math inline">\(\Delta\)</span>.</p>
 </section>
-<section id="correct-approach-a-direct-z-test-on-delta" class="level3" data-number="4.4.2">
-<h3 data-number="4.4.2" class="anchored" data-anchor-id="correct-approach-a-direct-z-test-on-delta"><span class="header-section-number">4.4.2</span> Correct Approach A: Direct z-Test on <span class="math inline">\(\Delta\)</span></h3>
-<p>Since the samples are independent, I can apply <a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a> directly:</p>
+<section id="correct-approach-a-direct-z-test-on-delta" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="correct-approach-a-direct-z-test-on-delta"><span class="header-section-number">3.4.2</span> Correct Approach A: Direct z-Test on <span class="math inline">\(\Delta\)</span></h3>
+<p>Since the samples are independent, I can apply <a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>3.2</span></a> directly:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>beta_A <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_A)[<span class="st">"treat"</span>]</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>beta_B <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_B)[<span class="st">"treat"</span>]</span>
@@ -498,14 +505,14 @@ Figure&nbsp;4.1: Left: Individual 95% CIs for each estimate. Right: Direct 95% C
 <pre><code>z = -1.394 , p = 0.1633 </code></pre>
 </div>
 </div>
-<p>The logic is straightforward: I take the two treatment-effect estimates, compute their difference <span class="math inline">\(\hat\Delta = \hat\beta_A - \hat\beta_B\)</span>, and divide by its standard error. Because the two samples are independent, the variance of the difference is just the sum of the two variances (<a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a>), and no covariance term is needed. The resulting z-statistic tells us whether the observed gap between the two estimates is larger than what we would expect from sampling variability alone. Here, the 95% CI for <span class="math inline">\(\Delta\)</span> includes zero and the p-value does not reject the null hypothesis, confirming that the two experiments are consistent with the same underlying effect.</p>
+<p>The logic is straightforward: I take the two treatment-effect estimates, compute their difference <span class="math inline">\(\hat\Delta = \hat\beta_A - \hat\beta_B\)</span>, and divide by its standard error. Because the two samples are independent, the variance of the difference is just the sum of the two variances (<a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>3.2</span></a>), and no covariance term is needed. The resulting z-statistic tells us whether the observed gap between the two estimates is larger than what we would expect from sampling variability alone. Here, the 95% CI for <span class="math inline">\(\Delta\)</span> includes zero and the p-value does not reject the null hypothesis, confirming that the two experiments are consistent with the same underlying effect.</p>
 </section>
-<section id="correct-approach-b-pooled-model-with-interaction-term" class="level3" data-number="4.4.3">
-<h3 data-number="4.4.3" class="anchored" data-anchor-id="correct-approach-b-pooled-model-with-interaction-term"><span class="header-section-number">4.4.3</span> Correct Approach B: Pooled Model with Interaction Term</h3>
+<section id="correct-approach-b-pooled-model-with-interaction-term" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="correct-approach-b-pooled-model-with-interaction-term"><span class="header-section-number">3.4.3</span> Correct Approach B: Pooled Model with Interaction Term</h3>
 <p>The more practical approach is to estimate a single pooled model with an interaction term:</p>
 <p><span id="eq-interaction-independent"><span class="math display">\[
 Y_i = \alpha + \beta \, T_i + \gamma \, G_i + \delta \, (T_i \times G_i) + \varepsilon_i
-\tag{4.4}\]</span></span></p>
+\tag{3.4}\]</span></span></p>
 <p>where <span class="math inline">\(T_i\)</span> is the treatment indicator (corruption vignette vs.&nbsp;control), <span class="math inline">\(G_i\)</span> is a country indicator (0 = A, 1 = B), and <span class="math inline">\(\delta\)</span> is the coefficient of interest. The interaction term directly estimates the difference in treatment effects between the two countries. The treatment effect in Country A is <span class="math inline">\(\beta\)</span>, and the treatment effect in Country B is <span class="math inline">\(\beta + \delta\)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>model_pooled <span class="ot">&lt;-</span> <span class="fu">lm</span>(trust <span class="sc">~</span> treat <span class="sc">*</span> group, <span class="at">data =</span> data_pooled)</span>
@@ -569,7 +576,7 @@ F-statistic: 3.321 on 3 and 346 DF,  p-value: 0.02001</code></pre>
 <img src="Comparing_Estimates_files/figure-html/fig-coefplot-independent-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-coefplot-independent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.2: Coefficient plot showing the effect of the corruption vignette on trust in each country and their difference. The difference (delta) answers the correct question.
+Figure&nbsp;3.2: Coefficient plot showing the effect of the corruption vignette on trust in each country and their difference. The difference (delta) answers the correct question.
 </figcaption>
 </figure>
 </div>
@@ -577,11 +584,11 @@ Figure&nbsp;4.2: Coefficient plot showing the effect of the corruption vignette 
 </div>
 </section>
 </section>
-<section id="case-ii---non-independent-estimates-same-units-split-over-time" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="case-ii---non-independent-estimates-same-units-split-over-time"><span class="header-section-number">4.5</span> Case II - Non-Independent Estimates: Same Units Split over Time</h2>
+<section id="case-ii---non-independent-estimates-same-units-split-over-time" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="case-ii---non-independent-estimates-same-units-split-over-time"><span class="header-section-number">3.5</span> Case II - Non-Independent Estimates: Same Units Split over Time</h2>
 <p>The second scenario is more subtle and more commonly mishandled. Suppose I have a panel dataset of countries observed over several decades, and I want to know whether the effect of a policy variable <span class="math inline">\(X\)</span> on an outcome <span class="math inline">\(Y\)</span> changed between two time periods (e.g., 1970–1989 vs 1990–2020). In the simulation below, the true effect is <strong>the same</strong> in both periods (<span class="math inline">\(\beta = 0.3\)</span>).</p>
-<section id="the-tempting-but-wrong-analysis-split-and-compare" class="level3" data-number="4.5.1">
-<h3 data-number="4.5.1" class="anchored" data-anchor-id="the-tempting-but-wrong-analysis-split-and-compare"><span class="header-section-number">4.5.1</span> The Tempting but Wrong Analysis: Split and Compare</h3>
+<section id="the-tempting-but-wrong-analysis-split-and-compare" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="the-tempting-but-wrong-analysis-split-and-compare"><span class="header-section-number">3.5.1</span> The Tempting but Wrong Analysis: Split and Compare</h3>
 <p>The tempting approach is to split the data by period and run separate regressions:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>panel_early <span class="ot">&lt;-</span> panel[panel<span class="sc">$</span>post <span class="sc">==</span> <span class="dv">0</span>, ]</span>
@@ -611,14 +618,14 @@ Figure&nbsp;4.2: Coefficient plot showing the effect of the corruption vignette 
 <pre><code>Effect of X: 0.3064  SE: 0.0843  p: 3e-04 </code></pre>
 </div>
 </div>
-<p>The results show a non-significant effect in the early period and a significant effect that also doubled in magnitude in the late period, tempting the researcher to conclude that the effect “emerged” after 1990. However, this conclusion is not supported by the data. Again, the correct question is whether the difference in effects between periods (<span class="math inline">\(\Delta\)</span>) is statistically distinguishable from zero, not whether each period’s estimate individually crosses a significance threshold. Because the same countries appear in both periods, the estimates are correlated. Applying the independent-samples formula (<a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>4.2</span></a>) would be incorrect. Instead, <a href="#eq-se-dependent" class="quarto-xref">Equation&nbsp;<span>4.3</span></a> should be used.</p>
+<p>The results show a non-significant effect in the early period and a significant effect that also doubled in magnitude in the late period, tempting the researcher to conclude that the effect “emerged” after 1990. However, this conclusion is not supported by the data. Again, the correct question is whether the difference in effects between periods (<span class="math inline">\(\Delta\)</span>) is statistically distinguishable from zero, not whether each period’s estimate individually crosses a significance threshold. Because the same countries appear in both periods, the estimates are correlated. Applying the independent-samples formula (<a href="#eq-se-independent" class="quarto-xref">Equation&nbsp;<span>3.2</span></a>) would be incorrect. Instead, <a href="#eq-se-dependent" class="quarto-xref">Equation&nbsp;<span>3.3</span></a> should be used.</p>
 </section>
-<section id="the-correct-approach-pooled-interaction-model" class="level3" data-number="4.5.2">
-<h3 data-number="4.5.2" class="anchored" data-anchor-id="the-correct-approach-pooled-interaction-model"><span class="header-section-number">4.5.2</span> The Correct Approach: Pooled Interaction Model</h3>
+<section id="the-correct-approach-pooled-interaction-model" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="the-correct-approach-pooled-interaction-model"><span class="header-section-number">3.5.2</span> The Correct Approach: Pooled Interaction Model</h3>
 <p>I estimate a single model on the full panel, including a period indicator and its interaction with <span class="math inline">\(X\)</span>:</p>
 <p><span id="eq-panel-interaction"><span class="math display">\[
 Y_{it} = \alpha_i + \tau_t + \beta \, X_{it} + \delta \, (X_{it} \times Post_t) + \varepsilon_{it}
-\tag{4.5}\]</span></span></p>
+\tag{3.5}\]</span></span></p>
 <p>Here <span class="math inline">\(\alpha_i\)</span> are country fixed effects, <span class="math inline">\(\tau_t\)</span> captures time trends, <span class="math inline">\(\beta\)</span> is the effect of <span class="math inline">\(X\)</span> in the early period, and <span class="math inline">\(\delta\)</span> is <strong>the change in the effect between periods</strong>, which is the quantity of interest.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>model_panel <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">*</span> post <span class="sc">+</span> <span class="fu">factor</span>(country) <span class="sc">+</span> <span class="fu">factor</span>(year), <span class="at">data =</span> panel)</span>
@@ -652,8 +659,8 @@ On Clustering Standard Errors
 </div>
 </div>
 </section>
-<section id="robustness-alternative-break-years" class="level3" data-number="4.5.3">
-<h3 data-number="4.5.3" class="anchored" data-anchor-id="robustness-alternative-break-years"><span class="header-section-number">4.5.3</span> Robustness: Alternative Break Years</h3>
+<section id="robustness-alternative-break-years" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="robustness-alternative-break-years"><span class="header-section-number">3.5.3</span> Robustness: Alternative Break Years</h3>
 <p>When the break year (here: 1990) is chosen by the researcher, it is good practice to show that results are not sensitive to this choice. For instance, I could re-estimate the model using alternative break years and plot how <span class="math inline">\(\hat\delta\)</span> varies:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>break_years <span class="ot">&lt;-</span> <span class="dv">1980</span><span class="sc">:</span><span class="dv">2000</span></span>
@@ -688,7 +695,7 @@ On Clustering Standard Errors
 <img src="Comparing_Estimates_files/figure-html/fig-break-robustness-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-break-robustness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.3: Estimated change in the effect of X (delta) for different break years. The shaded region shows the 95% CI.
+Figure&nbsp;3.3: Estimated change in the effect of X (delta) for different break years. The shaded region shows the 95% CI.
 </figcaption>
 </figure>
 </div>
@@ -709,8 +716,8 @@ Structural Break Tests
 </div>
 </section>
 </section>
-<section id="practical-pitfalls" class="level2" data-number="4.6">
-<h2 data-number="4.6" class="anchored" data-anchor-id="practical-pitfalls"><span class="header-section-number">4.6</span> Practical Pitfalls</h2>
+<section id="practical-pitfalls" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="practical-pitfalls"><span class="header-section-number">3.6</span> Practical Pitfalls</h2>
 <p>Having covered the two main cases, I now summarize common pitfalls that can undermine comparisons even when the correct method is used.</p>
 <p><strong>Low power of interaction tests.</strong> Interaction tests are often underpowered. Even when subgroup p-values look very different (e.g., <span class="math inline">\(p = .01\)</span> vs <span class="math inline">\(p = .20\)</span>), the interaction itself may not be significant because detecting a difference requires more statistical power than detecting a main effect. As a rough guideline, detecting an interaction of a given size typically requires four times the sample size needed to detect a main effect of the same magnitude. This is not a flaw of the method, it reflects the genuine uncertainty about whether the effects truly differ. Do not interpret a non-significant interaction as evidence that the effects are the same without making sure that your analysis is powered to detect the difference.</p>
 <p><strong>Multiple subgroup comparisons without correction.</strong> If I compare effects across five regions, ten time periods, or many subgroups, the probability of finding at least one “significant” difference by chance increases rapidly. Adjust for multiple comparisons using methods like Bonferroni, Holm, or Benjamini-Hochberg. Note that Bonferroni and Holm control the family-wise error rate (FWER), while Benjamini-Hochberg controls the false discovery rate (FDR) under independence or positive dependence of test statistics. When the dependence structure among tests is complex, the Benjamini-Yekutieli procedure or resampling-based methods may be more appropriate.</p>
@@ -733,8 +740,8 @@ Structural Break Tests
 <span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">hypothesis =</span> <span class="st">"pairwise"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="appendix-which-method-when-cheat-sheet" class="level2" data-number="4.7">
-<h2 data-number="4.7" class="anchored" data-anchor-id="appendix-which-method-when-cheat-sheet"><span class="header-section-number">4.7</span> Appendix: “Which Method When?” Cheat Sheet</h2>
+<section id="appendix-which-method-when-cheat-sheet" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="appendix-which-method-when-cheat-sheet"><span class="header-section-number">3.7</span> Appendix: “Which Method When?” Cheat Sheet</h2>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -792,8 +799,8 @@ Structural Break Tests
 </div>
 </div>
 </section>
-<section id="further-reading" class="level2" data-number="4.8">
-<h2 data-number="4.8" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">4.8</span> Further Reading</h2>
+<section id="further-reading" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">3.8</span> Further Reading</h2>
 <ol type="1">
 <li><p><strong>Gelman, A. &amp; Stern, H. (2006).</strong> “The Difference Between ‘Significant’ and ‘Not Significant’ Is Not Itself Statistically Significant.” <em>The American Statistician</em>, 60(4), 328–331.</p></li>
 <li><p><strong>Rainey, C. (2014).</strong> “Arguing for a Negligible Effect.” <em>American Journal of Political Science</em>, 58(4), 1083–1091.</p></li>
@@ -1224,11 +1231,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/Interaction_Polynomials.html" class="pagination-link" aria-label="Context Matters: A Guide to Interaction Terms">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span>
+      <a href="../chapters/Categorical_Compositional.html" class="pagination-link" aria-label="Categorical and Compositional Predictors: A Guide">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Categorical and Compositional Predictors: A Guide</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../chapters/Interaction_Polynomials.html" class="pagination-link" aria-label="Context Matters: A Guide to Interaction Terms">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Context Matters: A Guide to Interaction Terms</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
